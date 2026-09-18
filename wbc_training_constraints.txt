@@ -1,0 +1,7 @@
+torch==2.7.0
+torchvision==0.22.0
+setuptools==80.9.0
+wheel==0.45.1
+packaging==23.0
+click==8.1.7
+sentry-sdk==1.43.0

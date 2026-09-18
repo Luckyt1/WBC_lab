@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "isaaclab-decoupled-wbc"
+version = "0.1.0"
+description = "Isaac Lab locomotion training and deployment utilities for decoupled whole-body control."
+requires-python = ">=3.10"
+readme = "README.md"
+license = { file = "LICENSE.txt" }
+dependencies = [
+  "rsl-rl-lib>=2.3.0",
+  "tensorboard>=2.13.0",
+  "scipy>=1.15.0",
+  "pyyaml>=6.0.0",
+  "tomli>=2.0.0; python_version < '3.11'",
+]
+
+[project.optional-dependencies]
+# TensorBoard is the default logger. Recent W&B dependencies conflict with
+# Isaac Sim 5.0's pinned sentry-sdk/click versions; opt in on compatible stacks.
+wandb = ["wandb>=0.22.3"]
+
+[tool.setuptools.packages.find]
+include = ["legged_lab*"]
+
+[tool.setuptools.package-data]
+"legged_lab.assets" = [
+    "unitree/g1/*", "unitree/g1/configuration/*",
+    "elf3_dof31_current/usd/*.usd", "elf3_dof31_current/usd/configuration/*.usd",
+    "elf3_dof31_current/source_elf3.urdf", "elf3_dof31_current/conversion_manifest.json",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = [
+  "F403",
+  "F405",
+]
