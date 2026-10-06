@@ -1,0 +1,16 @@
+# Reference versions read from the working environments, not a complete lockfile.
+# Install Isaac Sim / Isaac Lab using their official installation instructions.
+# Do not blindly install this file into an existing Isaac environment.
+# Ubuntu 22.04, Python 3.11, NVIDIA RTX 4090
+torch==2.7.0
+numpy==1.26.0
+isaacsim==5.0.0.0
+isaaclab==2.2.0
+scipy==1.15.3
+PyYAML==6.0.2
+tensorboard==2.21.0
+onnx==1.21.0
+# Separate deployment environment:
+mujoco==3.14.0
+onnxruntime==1.30.0
+# RSL-RL is the modified source under rsl_rl/, installed editable.

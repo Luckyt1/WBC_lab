@@ -1,0 +1,186 @@
+# Copyright (c) 2021-2024, The RSL-RL Project Developers.
+# All rights reserved.
+# Original code is licensed under the BSD-3-Clause license.
+#
+# Copyright (c) 2022-2025, The Isaac Lab Project Developers.
+# All rights reserved.
+#
+# Copyright (c) 2025-2026, The Legged Lab Project Developers.
+# All rights reserved.
+#
+# Copyright (c) 2025-2026, The TienKung-Lab Project Developers.
+# All rights reserved.
+# Modifications are licensed under the BSD-3-Clause license.
+#
+# This file contains code derived from the RSL-RL, Isaac Lab, and Legged Lab Projects,
+# with additional modifications by the TienKung-Lab Project,
+# and is distributed under the BSD-3-Clause license.
+
+import argparse
+import sys
+from pathlib import Path
+
+_PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path[:0] = [str(_PROJECT_ROOT), str(_PROJECT_ROOT / "rsl_rl")]
+import os
+
+import torch
+from isaaclab.app import AppLauncher
+
+from legged_lab.utils import task_registry
+from rsl_rl.runners import OnPolicyRunner
+
+# local imports
+import legged_lab.utils.cli_args as cli_args  # isort: skip
+
+# add argparse arguments
+parser = argparse.ArgumentParser(description="Play an RL agent with RSL-RL.")
+parser.add_argument("--task", type=str, default=None, help="Name of the task.")
+parser.add_argument("--num_envs", type=int, default=None, help="Number of environments to simulate.")
+parser.add_argument("--seed", type=int, default=None, help="Seed used for the environment")
+parser.add_argument("--pelvis_height", type=float, default=None,
+                    help="Fixed ELF3 pelvis height matching the checkpoint's training recipe.")
+parser.add_argument("--command", type=float, nargs=5, metavar=("VX", "VY", "WZ", "HEIGHT", "WAIST_YAW"),
+                    help="Fixed walk_elf3_tang command; height is pelvis height in metres, yaw is radians.")
+parser.add_argument("--max_steps", type=int, default=None, help="Stop playback after this many control steps.")
+
+# append RSL-RL cli arguments
+cli_args.add_rsl_rl_args(parser)
+# append AppLauncher cli args
+AppLauncher.add_app_launcher_args(parser)
+args_cli, hydra_args = parser.parse_known_args()
+# Start camera rendering
+if "sensor" in args_cli.task:
+    args_cli.enable_cameras = True
+
+# launch omniverse app
+app_launcher = AppLauncher(args_cli)
+simulation_app = app_launcher.app
+
+from isaaclab_rl.rsl_rl import export_policy_as_jit, export_policy_as_onnx
+from isaaclab_tasks.utils import get_checkpoint_path
+
+from legged_lab.envs import *  # noqa:F401, F403
+from legged_lab.utils.cli_args import update_rsl_rl_cfg
+
+
+def configure_ppo_agent(agent_cfg):
+    """Force a task config to use plain PPO for play."""
+    runner_class_name = getattr(agent_cfg, "runner_class_name", "OnPolicyRunner")
+    if runner_class_name != "OnPolicyRunner":
+        print(
+            f"[INFO] Ignoring runner_class_name={runner_class_name!r}; "
+            "play.py uses OnPolicyRunner."
+        )
+        agent_cfg.runner_class_name = "OnPolicyRunner"
+
+    algorithm_class_name = getattr(agent_cfg.algorithm, "class_name", "PPO")
+    if algorithm_class_name != "PPO":
+        print(f"[INFO] Overriding algorithm.class_name={algorithm_class_name!r} to 'PPO'.")
+        agent_cfg.algorithm.class_name = "PPO"
+
+    return agent_cfg
+
+
+def play():
+    runner: OnPolicyRunner
+    env_cfg: BaseEnvCfg  # noqa:F405
+
+    env_class_name = args_cli.task
+    env_cfg, agent_cfg = task_registry.get_cfgs(env_class_name)
+    is_tang = env_class_name in {"walk_elf3_tang", "walk_elf3_tang_bxi", "walk_elf3_tang_bxi_stand", "walk_elf3_tang_bxi_focus", "walk_elf3_tang_bxi_scratch", "walk_elf3_tang_bxi_robust", "walk_elf3_tang_bxi_still"}
+
+    env_cfg.noise.add_noise = False
+    env_cfg.scene.max_episode_length_s = 40.0
+    env_cfg.scene.num_envs = 50
+    env_cfg.scene.env_spacing = 2.5
+    if is_tang:
+        # Keep the task's five-command curriculum and arm disturbance configuration.
+        env_cfg.domain_rand.events.push_robot = None
+        # A zero-command playback should start at rest, including after keyboard reset.
+        env_cfg.reset_velocity_curriculum.initial_scale = 0.0
+        env_cfg.reset_velocity_curriculum.final_scale = 0.0
+    else:
+        env_cfg.domain_rand.events.push_robot = None
+        env_cfg.commands.rel_standing_envs = 0.0
+        # env_cfg.commands.ranges.lin_vel_x = (1.0, 1.0)
+        # env_cfg.commands.ranges.lin_vel_x = (-1.0, 1.0)
+        # env_cfg.commands.ranges.lin_vel_x = (-0.5, 0.5)
+        env_cfg.commands.ranges.lin_vel_x = (-0.5, 1.0)
+        # env_cfg.commands.ranges.lin_vel_x = (-0.5, 2.3)
+        # env_cfg.commands.ranges.lin_vel_x = (-0.5, 3.0)
+        # env_cfg.commands.ranges.lin_vel_x = (0.0, 0.0)
+        env_cfg.commands.ranges.lin_vel_y = (0.0, 0.0)
+        # env_cfg.commands.ranges.lin_vel_y = (-0.5, 0.5)
+    env_cfg.scene.height_scanner.drift_range = (0.0, 0.0)
+
+    if not is_tang:
+        env_cfg.scene.terrain_generator = None
+        env_cfg.scene.terrain_type = "plane"
+
+    if env_cfg.scene.terrain_generator is not None:
+        env_cfg.scene.terrain_generator.num_rows = 5
+        env_cfg.scene.terrain_generator.num_cols = 5
+        env_cfg.scene.terrain_generator.curriculum = False
+        env_cfg.scene.terrain_generator.difficulty_range = (0.2, 0.2)
+
+    if args_cli.num_envs is not None:
+        env_cfg.scene.num_envs = args_cli.num_envs
+
+    agent_cfg = update_rsl_rl_cfg(agent_cfg, args_cli)
+    env_cfg.scene.seed = agent_cfg.seed
+
+    if args_cli.pelvis_height is not None:
+        if not is_tang:
+            raise ValueError("--pelvis_height is supported for walk_elf3_tang tasks only.")
+        from tools.fixed_pelvis_height import configure_fixed_height
+
+        height = configure_fixed_height(env_cfg, args_cli.pelvis_height)
+        print(f"[INFO] Fixed playback pelvis height: {height} m")
+
+    env_class = task_registry.get_task_class(env_class_name)
+    env = env_class(env_cfg, args_cli.headless)
+
+    log_root_path = os.path.join("logs", agent_cfg.experiment_name)
+    log_root_path = os.path.abspath(log_root_path)
+    print(f"[INFO] Loading experiment from directory: {log_root_path}")
+    resume_path = get_checkpoint_path(log_root_path, agent_cfg.load_run, agent_cfg.load_checkpoint)
+    log_dir = os.path.dirname(resume_path)
+
+    agent_cfg = configure_ppo_agent(agent_cfg)
+    runner = OnPolicyRunner(env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device)
+    runner.load(resume_path, load_optimizer=False)
+
+    if args_cli.command is not None:
+        if not is_tang:
+            raise ValueError("--command is supported for walk_elf3_tang only.")
+        env.command_generator.set_manual_command(args_cli.command)
+
+    policy = runner.get_inference_policy(device=env.device)
+
+    export_model_dir = os.path.join(os.path.dirname(resume_path), "exported")
+    export_policy_as_jit(runner.alg.policy, runner.obs_normalizer, path=export_model_dir, filename="policy.pt")
+    export_policy_as_onnx(
+        runner.alg.policy, normalizer=runner.obs_normalizer, path=export_model_dir, filename="policy.onnx"
+    )
+
+    if not args_cli.headless:
+        from legged_lab.utils.keyboard import Keyboard
+
+        keyboard = Keyboard(env)  # noqa:F841
+
+    obs, _ = env.get_observations()
+
+    step = 0
+    while simulation_app.is_running() and (args_cli.max_steps is None or step < args_cli.max_steps):
+
+        with torch.inference_mode():
+            actions = policy(obs)
+            obs, _, _, _ = env.step(actions)
+            step += 1
+
+
+if __name__ == "__main__":
+    from legged_lab.utils.app_lifecycle import run_simulation
+
+    run_simulation(play, simulation_app, args_cli.headless)

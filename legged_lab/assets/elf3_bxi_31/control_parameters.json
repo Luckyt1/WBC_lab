@@ -1,0 +1,677 @@
+{
+  "source_repository": "https://github.com/bxirobotics/bxi_controller_ros2",
+  "source_hashes": {
+    "resources/elf3_dof31/urdf/elf3.urdf": "6ede896d8718593927e96953cee0ce66c2c56eacd6bec50f86604962d53a0410",
+    "src/bxi_example_py_elf3/bxi_example_py_elf3/policies/joints.py": "bf8d5696d1f1e6c7ab01eb21624b9f6936fbaa44bbde466929e6655f22515547",
+    "src/bxi_example_py_elf3/bxi_example_py_elf3/bxi_example_demo.py": "d59314b54339dfea78f6f3e9320126bf1b5791c4ba9da7dda7c03720e0a607a8",
+    "src/bxi_example_py_elf3/data/mujoco_simulation/elf3.xml": "eda267d24465a847e3fff8b2a8e379324845e563643ec610b38d701fed64d28e",
+    "src/bxi_example_py_elf3/config/elf3_state_machine.yaml": "684b462c09021d21ca15e436d680c548d07e107da67dd7ad2a99f219cf6be664",
+    "resources/elf3_dof31/urdf/meshes/head_y_link.STL": "969c9e3a360bb34c3e1a3a114a5cadc7fb0b15db634a6c52a10ad26c2e07aee3",
+    "resources/elf3_dof31/urdf/meshes/head_z_link.STL": "f2da60337b5d7a58976484e5cb8a85bbcf55d2715e989f04853485b95fe8accc",
+    "resources/elf3_dof31/urdf/meshes/l_ankle_x_link.STL": "e273bae5d726d52b64939cc9c5c547ab093bbf6f75c2af1bc718c62feb208f8f",
+    "resources/elf3_dof31/urdf/meshes/l_ankle_y_link.STL": "df413aa9bde523b10a051a27ecff03da6fdf15ae0381b85eb5096733c08d402e",
+    "resources/elf3_dof31/urdf/meshes/l_elbow_y_link.STL": "eae165ca4f91299ca87ab67e9e3090a8ca4cdc62246debe390da1e17a538dd40",
+    "resources/elf3_dof31/urdf/meshes/l_hip_x_link.STL": "e3ee22d465ded95880bee10fae25b0e4860e4e95fa6198cdfdc31be21453bbc1",
+    "resources/elf3_dof31/urdf/meshes/l_hip_y_link.STL": "6d54d31066bee5eb31c11c4e0c79f37bf9431b26d313a9040168ed98f9c2987e",
+    "resources/elf3_dof31/urdf/meshes/l_hip_z_link.STL": "0ef3fa4993b2de90325027395df7e5cdb09be9ac6006c0582994e45f782bf752",
+    "resources/elf3_dof31/urdf/meshes/l_knee_y_link.STL": "7646684ff450d62e1cb92aa1ceac63128b34b9a507bd3958735c982aaf3b66d8",
+    "resources/elf3_dof31/urdf/meshes/l_shoulder_x_link.STL": "a3858ddddd14d658a58c577cde15d89ba1c63993fcaa85ee013e05b0be340689",
+    "resources/elf3_dof31/urdf/meshes/l_shoulder_y_link.STL": "b3288325acae574316e8b46c6af11664abcfe25451da911e6578ad90a9e5c8c7",
+    "resources/elf3_dof31/urdf/meshes/l_shoulder_z_link.STL": "50268b19a4f3119035675b648d140e99e16275fa0c5fef33450bc9132da262de",
+    "resources/elf3_dof31/urdf/meshes/l_wrist_x_link.STL": "ea41bff2013fe23982cea2e04a66e6c4f9b9207001769de9066515721afaacf9",
+    "resources/elf3_dof31/urdf/meshes/l_wrist_x_link_part.STL": "8cf52182b4aa06dd6e0d8ac276ddee7721b179b8af678e2eb99c8e8a09a0050a",
+    "resources/elf3_dof31/urdf/meshes/l_wrist_y_link.STL": "03172aa36b00891e05458830c6673979057bced3b74657762164bf10f57773a1",
+    "resources/elf3_dof31/urdf/meshes/l_wrist_z_link.STL": "fef756be515365ca3780c81da5d20c0cb124a1761509334380e9c8e2e2eaccab",
+    "resources/elf3_dof31/urdf/meshes/r_ankle_x_link.STL": "e273bae5d726d52b64939cc9c5c547ab093bbf6f75c2af1bc718c62feb208f8f",
+    "resources/elf3_dof31/urdf/meshes/r_ankle_y_link.STL": "66eaed4d9f0f4f864fa41c8fdeba764ab81a75dcc63dbc04000c951735288edc",
+    "resources/elf3_dof31/urdf/meshes/r_elbow_y_link.STL": "053d8d08d5da73148641301371d455faf0b6832777ea1539e4aba380cf5c1718",
+    "resources/elf3_dof31/urdf/meshes/r_hip_x_link.STL": "158cf088b22d8d2a7b2a9e778c24839c2a3599cc3c9e235ff351d153d39c96c6",
+    "resources/elf3_dof31/urdf/meshes/r_hip_y_link.STL": "1735e97a43aa1d03eec684f4425b41727af91eb8542fdfb91678738742252503",
+    "resources/elf3_dof31/urdf/meshes/r_hip_z_link.STL": "5c5ef93f1b2205d6874d71b0a882fff07fb7264ead99d1325081beacc651cee6",
+    "resources/elf3_dof31/urdf/meshes/r_knee_y_link.STL": "e17b2bbc4a202d5f84abd51bbe8b861e283a66633e8cc7cf62ca17b84c3bac25",
+    "resources/elf3_dof31/urdf/meshes/r_shoulder_x_link.STL": "179fc173b5c695974dbfb48aa2cab24281fa71b0bd90cbbfd37bbfc6d2548629",
+    "resources/elf3_dof31/urdf/meshes/r_shoulder_y_link.STL": "41535cd6fec3333a27fc587c2d20c83eb3bad0325ab03afadde2ccfe2d0dad9e",
+    "resources/elf3_dof31/urdf/meshes/r_shoulder_z_link.STL": "034d3ceac16c1040b3538fec9ba12d600444bf950a861c32fe06b2a5e4d6e9fd",
+    "resources/elf3_dof31/urdf/meshes/r_wrist_x_link.STL": "a4402b62c580ab1ce72d143e3d2f533bbdd378f5ecf9c04038b1b37a487fc23c",
+    "resources/elf3_dof31/urdf/meshes/r_wrist_x_link_part.STL": "c9bf3dccbec0255d501eeea37c74a89f57971bff5d90ec33bff6a9905e98a63e",
+    "resources/elf3_dof31/urdf/meshes/r_wrist_y_link.STL": "0eae83f997561cf5c806c8066e814a327c1edc1362bae73a75407cc17952cf41",
+    "resources/elf3_dof31/urdf/meshes/r_wrist_z_link.STL": "d1f749fe7bc8b5cbdbbbdf647b8d75823ab91c17d0811e99df1fc01587923caf",
+    "resources/elf3_dof31/urdf/meshes/torso_link.STL": "f42e37890c136955d670d5918c7ed6f351bc22ba79db8f927d5f0187ae9336aa",
+    "resources/elf3_dof31/urdf/meshes/waist_x_link.STL": "b8e367fae6bcf8f98c415a681fac4a05fbb34eb7265a4b93b8196d44b73400ab",
+    "resources/elf3_dof31/urdf/meshes/waist_y_link.STL": "5d2a0e1f52a6e126d042ddb1af9de6954811aeac8f3988e27ead487c6661ae83",
+    "resources/elf3_dof31/urdf/meshes/waist_z_link.STL": "fd50b23fcc9ff0f1918f2952030ae067685be77f62b73e65c765a8a6a537ef06"
+  },
+  "urdf_relative_path": "resources/elf3_dof31/urdf/elf3.urdf",
+  "policy_joint_names": [
+    "waist_y_joint",
+    "waist_x_joint",
+    "waist_z_joint",
+    "l_hip_y_joint",
+    "l_hip_x_joint",
+    "l_hip_z_joint",
+    "l_knee_y_joint",
+    "l_ankle_y_joint",
+    "l_ankle_x_joint",
+    "r_hip_y_joint",
+    "r_hip_x_joint",
+    "r_hip_z_joint",
+    "r_knee_y_joint",
+    "r_ankle_y_joint",
+    "r_ankle_x_joint"
+  ],
+  "arm_joint_names": [
+    "l_shoulder_y_joint",
+    "l_shoulder_x_joint",
+    "l_shoulder_z_joint",
+    "l_elbow_y_joint",
+    "l_wrist_x_joint",
+    "l_wrist_y_joint",
+    "l_wrist_z_joint",
+    "r_shoulder_y_joint",
+    "r_shoulder_x_joint",
+    "r_shoulder_z_joint",
+    "r_elbow_y_joint",
+    "r_wrist_x_joint",
+    "r_wrist_y_joint",
+    "r_wrist_z_joint"
+  ],
+  "held_joint_names": [
+    "head_z_joint",
+    "head_y_joint"
+  ],
+  "deployment_joint_names": [
+    "waist_y_joint",
+    "waist_x_joint",
+    "waist_z_joint",
+    "l_hip_y_joint",
+    "l_hip_x_joint",
+    "l_hip_z_joint",
+    "l_knee_y_joint",
+    "l_ankle_y_joint",
+    "l_ankle_x_joint",
+    "r_hip_y_joint",
+    "r_hip_x_joint",
+    "r_hip_z_joint",
+    "r_knee_y_joint",
+    "r_ankle_y_joint",
+    "r_ankle_x_joint",
+    "l_shoulder_y_joint",
+    "l_shoulder_x_joint",
+    "l_shoulder_z_joint",
+    "l_elbow_y_joint",
+    "l_wrist_x_joint",
+    "l_wrist_y_joint",
+    "l_wrist_z_joint",
+    "r_shoulder_y_joint",
+    "r_shoulder_x_joint",
+    "r_shoulder_z_joint",
+    "r_elbow_y_joint",
+    "r_wrist_x_joint",
+    "r_wrist_y_joint",
+    "r_wrist_z_joint",
+    "head_z_joint",
+    "head_y_joint"
+  ],
+  "joints": {
+    "l_shoulder_y_joint": {
+      "default_position": 0.2,
+      "kp": 54.224,
+      "kd": 3.452,
+      "action_scale": 0.231,
+      "limits": {
+        "lower": -2.8798,
+        "upper": 2.8798,
+        "effort": 45.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 50.0,
+      "armature": 0.0137351,
+      "effort_limit": 50.0
+    },
+    "r_shoulder_y_joint": {
+      "default_position": 0.2,
+      "kp": 54.224,
+      "kd": 3.452,
+      "action_scale": 0.231,
+      "limits": {
+        "lower": -2.8798,
+        "upper": 2.8798,
+        "effort": 45.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 50.0,
+      "armature": 0.0137351,
+      "effort_limit": 50.0
+    },
+    "waist_y_joint": {
+      "default_position": 0.0,
+      "kp": 108.448,
+      "kd": 6.904,
+      "action_scale": 0.231,
+      "limits": {
+        "lower": -0.5236,
+        "upper": 0.5236,
+        "effort": 90.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 100.0,
+      "armature": 0.0274702,
+      "effort_limit": 100.0
+    },
+    "l_shoulder_x_joint": {
+      "default_position": 0.2,
+      "kp": 54.224,
+      "kd": 3.452,
+      "action_scale": 0.231,
+      "limits": {
+        "lower": -0.34907,
+        "upper": 3.0543,
+        "effort": 45.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 50.0,
+      "armature": 0.0137351,
+      "effort_limit": 50.0
+    },
+    "r_shoulder_x_joint": {
+      "default_position": -0.2,
+      "kp": 54.224,
+      "kd": 3.452,
+      "action_scale": 0.231,
+      "limits": {
+        "lower": -3.0543,
+        "upper": 0.34907,
+        "effort": 45.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 50.0,
+      "armature": 0.0137351,
+      "effort_limit": 50.0
+    },
+    "waist_x_joint": {
+      "default_position": 0.0,
+      "kp": 162.672,
+      "kd": 10.356,
+      "action_scale": 0.154,
+      "limits": {
+        "lower": -0.2618,
+        "upper": 0.2618,
+        "effort": 100.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 100.0,
+      "armature": 0.0412054,
+      "effort_limit": 100.0
+    },
+    "l_shoulder_z_joint": {
+      "default_position": 0.0,
+      "kp": 16.747,
+      "kd": 1.066,
+      "action_scale": 0.373,
+      "limits": {
+        "lower": -2.8798,
+        "upper": 2.8798,
+        "effort": 21.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 25.0,
+      "armature": 0.00424198,
+      "effort_limit": 25.0
+    },
+    "r_shoulder_z_joint": {
+      "default_position": 0.0,
+      "kp": 16.747,
+      "kd": 1.066,
+      "action_scale": 0.373,
+      "limits": {
+        "lower": -2.8798,
+        "upper": 2.8798,
+        "effort": 21.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 25.0,
+      "armature": 0.00424198,
+      "effort_limit": 25.0
+    },
+    "waist_z_joint": {
+      "default_position": 0.0,
+      "kp": 176.421,
+      "kd": 11.231,
+      "action_scale": 0.213,
+      "limits": {
+        "lower": -2.8798,
+        "upper": 2.8798,
+        "effort": 150.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 150.0,
+      "armature": 0.044688,
+      "effort_limit": 150.0
+    },
+    "l_elbow_y_joint": {
+      "default_position": 0.6,
+      "kp": 54.224,
+      "kd": 3.452,
+      "action_scale": 0.231,
+      "limits": {
+        "lower": -0.95993,
+        "upper": 1.6581,
+        "effort": 45.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 50.0,
+      "armature": 0.0137351,
+      "effort_limit": 50.0
+    },
+    "r_elbow_y_joint": {
+      "default_position": 0.6,
+      "kp": 54.224,
+      "kd": 3.452,
+      "action_scale": 0.231,
+      "limits": {
+        "lower": -0.95993,
+        "upper": 1.6581,
+        "effort": 45.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 50.0,
+      "armature": 0.0137351,
+      "effort_limit": 50.0
+    },
+    "l_hip_y_joint": {
+      "default_position": -0.3,
+      "kp": 176.421,
+      "kd": 11.231,
+      "action_scale": 0.213,
+      "limits": {
+        "lower": -2.8798,
+        "upper": 2.8798,
+        "effort": 150.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 150.0,
+      "armature": 0.044688,
+      "effort_limit": 150.0
+    },
+    "r_hip_y_joint": {
+      "default_position": -0.3,
+      "kp": 176.421,
+      "kd": 11.231,
+      "action_scale": 0.213,
+      "limits": {
+        "lower": -2.8798,
+        "upper": 2.8798,
+        "effort": 150.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 150.0,
+      "armature": 0.044688,
+      "effort_limit": 150.0
+    },
+    "l_wrist_x_joint": {
+      "default_position": 0.0,
+      "kp": 16.747,
+      "kd": 1.066,
+      "action_scale": 0.373,
+      "limits": {
+        "lower": -2.8798,
+        "upper": 2.8798,
+        "effort": 21.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 25.0,
+      "armature": 0.00424198,
+      "effort_limit": 25.0
+    },
+    "r_wrist_x_joint": {
+      "default_position": 0.0,
+      "kp": 16.747,
+      "kd": 1.066,
+      "action_scale": 0.373,
+      "limits": {
+        "lower": -2.8798,
+        "upper": 2.8798,
+        "effort": 21.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 25.0,
+      "armature": 0.00424198,
+      "effort_limit": 25.0
+    },
+    "l_hip_x_joint": {
+      "default_position": 0.0,
+      "kp": 176.421,
+      "kd": 11.231,
+      "action_scale": 0.213,
+      "limits": {
+        "lower": -0.48869,
+        "upper": 3.0543,
+        "effort": 150.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 150.0,
+      "armature": 0.044688,
+      "effort_limit": 150.0
+    },
+    "r_hip_x_joint": {
+      "default_position": 0.0,
+      "kp": 176.421,
+      "kd": 11.231,
+      "action_scale": 0.213,
+      "limits": {
+        "lower": -3.0543,
+        "upper": 0.48869,
+        "effort": 150.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 150.0,
+      "armature": 0.044688,
+      "effort_limit": 150.0
+    },
+    "l_wrist_y_joint": {
+      "default_position": 0.0,
+      "kp": 16.747,
+      "kd": 1.066,
+      "action_scale": 0.373,
+      "limits": {
+        "lower": -1.309,
+        "upper": 1.309,
+        "effort": 21.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 25.0,
+      "armature": 0.00424198,
+      "effort_limit": 25.0
+    },
+    "r_wrist_y_joint": {
+      "default_position": 0.0,
+      "kp": 16.747,
+      "kd": 1.066,
+      "action_scale": 0.373,
+      "limits": {
+        "lower": -1.309,
+        "upper": 1.309,
+        "effort": 21.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 25.0,
+      "armature": 0.00424198,
+      "effort_limit": 25.0
+    },
+    "l_hip_z_joint": {
+      "default_position": 0.0,
+      "kp": 54.224,
+      "kd": 3.452,
+      "action_scale": 0.231,
+      "limits": {
+        "lower": -2.8798,
+        "upper": 2.8798,
+        "effort": 45.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 50.0,
+      "armature": 0.0137351,
+      "effort_limit": 50.0
+    },
+    "r_hip_z_joint": {
+      "default_position": 0.0,
+      "kp": 54.224,
+      "kd": 3.452,
+      "action_scale": 0.231,
+      "limits": {
+        "lower": -2.8798,
+        "upper": 2.8798,
+        "effort": 45.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 50.0,
+      "armature": 0.0137351,
+      "effort_limit": 50.0
+    },
+    "l_wrist_z_joint": {
+      "default_position": 0.0,
+      "kp": 16.747,
+      "kd": 1.066,
+      "action_scale": 0.373,
+      "limits": {
+        "lower": -0.7854,
+        "upper": 0.7854,
+        "effort": 21.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 25.0,
+      "armature": 0.00424198,
+      "effort_limit": 25.0
+    },
+    "r_wrist_z_joint": {
+      "default_position": 0.0,
+      "kp": 16.747,
+      "kd": 1.066,
+      "action_scale": 0.373,
+      "limits": {
+        "lower": -0.7854,
+        "upper": 0.7854,
+        "effort": 21.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 25.0,
+      "armature": 0.00424198,
+      "effort_limit": 25.0
+    },
+    "l_knee_y_joint": {
+      "default_position": 0.6,
+      "kp": 176.421,
+      "kd": 11.231,
+      "action_scale": 0.213,
+      "limits": {
+        "lower": -0.087266,
+        "upper": 2.618,
+        "effort": 150.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 150.0,
+      "armature": 0.044688,
+      "effort_limit": 150.0
+    },
+    "r_knee_y_joint": {
+      "default_position": 0.6,
+      "kp": 176.421,
+      "kd": 11.231,
+      "action_scale": 0.213,
+      "limits": {
+        "lower": -0.087266,
+        "upper": 2.618,
+        "effort": 150.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 150.0,
+      "armature": 0.044688,
+      "effort_limit": 150.0
+    },
+    "l_ankle_y_joint": {
+      "default_position": -0.3,
+      "kp": 33.493,
+      "kd": 2.132,
+      "action_scale": 0.373,
+      "limits": {
+        "lower": -0.87266,
+        "upper": 0.7854,
+        "effort": 50.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 50.0,
+      "armature": 0.00848397,
+      "effort_limit": 50.0
+    },
+    "r_ankle_y_joint": {
+      "default_position": -0.3,
+      "kp": 33.493,
+      "kd": 2.132,
+      "action_scale": 0.373,
+      "limits": {
+        "lower": -0.87266,
+        "upper": 0.7854,
+        "effort": 50.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 50.0,
+      "armature": 0.00848397,
+      "effort_limit": 50.0
+    },
+    "l_ankle_x_joint": {
+      "default_position": 0.0,
+      "kp": 21.771,
+      "kd": 1.386,
+      "action_scale": 0.23,
+      "limits": {
+        "lower": -0.34907,
+        "upper": 0.34907,
+        "effort": 20.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 20.0,
+      "armature": 0.00551458,
+      "effort_limit": 20.0
+    },
+    "r_ankle_x_joint": {
+      "default_position": 0.0,
+      "kp": 21.771,
+      "kd": 1.386,
+      "action_scale": 0.23,
+      "limits": {
+        "lower": -0.34907,
+        "upper": 0.34907,
+        "effort": 20.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 20.0,
+      "armature": 0.00551458,
+      "effort_limit": 20.0
+    },
+    "head_y_joint": {
+      "default_position": 0.0,
+      "kp": 16.747,
+      "kd": 1.066,
+      "action_scale": 0.0,
+      "limits": {
+        "lower": -0.785,
+        "upper": 0.785,
+        "effort": 21.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 21.0,
+      "armature": 0.00424198,
+      "effort_limit": 21.0
+    },
+    "head_z_joint": {
+      "default_position": 0.0,
+      "kp": 16.747,
+      "kd": 1.066,
+      "action_scale": 0.0,
+      "limits": {
+        "lower": -1.57,
+        "upper": 1.57,
+        "effort": 21.0,
+        "velocity": 20.0
+      },
+      "deployment_effort": 21.0,
+      "armature": 0.00424198,
+      "effort_limit": 21.0
+    }
+  },
+  "effort_differences": [
+    {
+      "joint": "waist_y_joint",
+      "urdf": 90.0,
+      "deployment": 100.0
+    },
+    {
+      "joint": "l_hip_z_joint",
+      "urdf": 45.0,
+      "deployment": 50.0
+    },
+    {
+      "joint": "r_hip_z_joint",
+      "urdf": 45.0,
+      "deployment": 50.0
+    },
+    {
+      "joint": "l_shoulder_y_joint",
+      "urdf": 45.0,
+      "deployment": 50.0
+    },
+    {
+      "joint": "l_shoulder_x_joint",
+      "urdf": 45.0,
+      "deployment": 50.0
+    },
+    {
+      "joint": "l_shoulder_z_joint",
+      "urdf": 21.0,
+      "deployment": 25.0
+    },
+    {
+      "joint": "l_elbow_y_joint",
+      "urdf": 45.0,
+      "deployment": 50.0
+    },
+    {
+      "joint": "l_wrist_x_joint",
+      "urdf": 21.0,
+      "deployment": 25.0
+    },
+    {
+      "joint": "l_wrist_y_joint",
+      "urdf": 21.0,
+      "deployment": 25.0
+    },
+    {
+      "joint": "l_wrist_z_joint",
+      "urdf": 21.0,
+      "deployment": 25.0
+    },
+    {
+      "joint": "r_shoulder_y_joint",
+      "urdf": 45.0,
+      "deployment": 50.0
+    },
+    {
+      "joint": "r_shoulder_x_joint",
+      "urdf": 45.0,
+      "deployment": 50.0
+    },
+    {
+      "joint": "r_shoulder_z_joint",
+      "urdf": 21.0,
+      "deployment": 25.0
+    },
+    {
+      "joint": "r_elbow_y_joint",
+      "urdf": 45.0,
+      "deployment": 50.0
+    },
+    {
+      "joint": "r_wrist_x_joint",
+      "urdf": 21.0,
+      "deployment": 25.0
+    },
+    {
+      "joint": "r_wrist_y_joint",
+      "urdf": 21.0,
+      "deployment": 25.0
+    },
+    {
+      "joint": "r_wrist_z_joint",
+      "urdf": 21.0,
+      "deployment": 25.0
+    }
+  ],
+  "control_period_s": 0.02,
+  "source_mass_kg": 43.22247589000001,
+  "source_root_position": [
+    0.0,
+    0.0,
+    1.1
+  ],
+  "effort_source": "deployment"
+}

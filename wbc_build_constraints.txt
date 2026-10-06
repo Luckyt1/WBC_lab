@@ -1,2 +1,0 @@
-# flatdict 4.0.1 requires pkg_resources while building.
-setuptools==80.9.0

@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "elf3-ppo"
+version = "0.1.0"
+description = "ELF3 humanoid PPO training with external arm motion, symmetry and auxiliary dynamics supervision"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {file = "LICENSE"}
+dependencies = [
+  "numpy>=1.26,<2", "PyYAML>=6", "scipy>=1.11", "tensorboard>=2.16",
+  "matplotlib>=3.8", "toml>=0.10", "gymnasium>=1.0", "GitPython>=3.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+deployment = ["mujoco>=3.3,<4", "onnx>=1.17", "onnxruntime>=1.20"]
+viewer = ["pynput>=1.7"]
+
+[tool.setuptools.packages.find]
+include = ["legged_lab*", "tools*"]
+exclude = ["tests*", "rsl_rl*", "deployment*"]
+namespaces = true
+
+[tool.setuptools.package-data]
+"legged_lab.assets.elf3_bxi_31" = ["*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

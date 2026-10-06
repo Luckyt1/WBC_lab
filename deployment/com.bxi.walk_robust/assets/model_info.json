@@ -1,0 +1,31 @@
+{
+  "task": "walk_elf3_tang_bxi_robust",
+  "control_parameters_sha256": "f7f164d5b2eca561932b3ccccc7ba1d39b6fb475090862495c6f211c83214e47",
+  "observation_frame_size": 84,
+  "history_frames": 10,
+  "history_order": "oldest_first",
+  "observation_clip": 100.0,
+  "action_clip": 100.0,
+  "soft_joint_pos_limit_factor": 0.9,
+  "control_period_s": 0.02,
+  "height_command": 0.8235,
+  "waist_yaw_command": 0.0,
+  "imu_frame": "torso_link",
+  "actor_frame": "waist_z_link",
+  "arm_control": "fixed_training_default",
+  "command_bounds": [
+    [
+      -0.6,
+      0.6
+    ],
+    [
+      -0.3,
+      0.3
+    ],
+    [
+      -0.6,
+      0.6
+    ]
+  ],
+  "description": "Runtime observation/action contract only; no model weights or performance claims."
+}
