@@ -1,14 +1,7 @@
-# 本地资源
+# 外部资源
 
-该目录默认仅提交此说明。机器人 USD、URDF、网格及动作数据由环境变量指定，不随源码分发。
+此目录的内容被 Git 忽略（本文件除外）。机器人 USD/URDF/网格、上游 IK 源码、
+完整 IK 轨迹库和 AMASS 数据在本机准备，通过 `.env` 引用。
 
-默认约定：
-
-```text
-resources/elf3_bxi_31/usd/elf3.usd
-resources/elf3_bxi_31/control_parameters.json
-resources/elf3_bxi_31/source/...
-resources/dataset/g1/CMU/**/..._jpos.npy
-```
-
-可通过 `ELF3_ASSET_DIR` 和 `ELF3_AMASS_DIR` 引用任意外部目录。详见 [安装说明](../docs/installation.md)。
+配置和安装见根目录 README、`docs/installation.md`、`docs/ik-data.md`。
+不要将 `tests/fixtures/ik_banks` 当作完整训练库。

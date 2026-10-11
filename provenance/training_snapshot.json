@@ -1,0 +1,66 @@
+{
+  "snapshot_date": "2026-10-11",
+  "training_run": "2026-10-10_18-19-24_ik_execution_v3_bcd_height080_dynamics_symmetry_stand50_resume32000_20261010_181911_4096_from32001",
+  "supervisor_run": "ik_execution_v3_bcd_height080_dynamics_symmetry_stand50_resume32000_20261010_181911",
+  "status": "stopped_by_user",
+  "last_logged_iteration": 56296,
+  "latest_saved_iteration": 56000,
+  "discussed_candidate_iteration": 45000,
+  "source_checkpoint_iteration": 32000,
+  "initial_completed_updates": 32001,
+  "target_total_iterations": 80000,
+  "task": "walk_elf3_tang_bxi_robust",
+  "num_envs": 4096,
+  "seed": 42,
+  "pelvis_height": 0.8,
+  "standing_fraction": 0.5,
+  "auxiliary_supervision": "dynamics",
+  "elf3_symmetry": true,
+  "liftoff_reward_recipe": "bcd_v1",
+  "save_interval": 500,
+  "evaluation_interval": 5000,
+  "ik_bank_directory": "ik_reach_hold_return_predictive_v3_servo_20261008",
+  "ik_bank_sha256": {
+    "train": "0373cd213267ff11c43d2b4a50b33ed87cf8ae46b91439882067a442499228d8",
+    "test": "e99a8b3fa091fcba6dd65a43b59b83503921b718fffc26509f5ebe4e7a670530"
+  },
+  "checkpoint_references": {
+    "32000": {
+      "filename": "model_32000.pt",
+      "run_directory": "2026-10-08_03-00-58_ik_execution_v3_bcd_height080_dynamics_symmetry_stand50_20261008_030046_4096_from18501",
+      "sha256": "3c16ab948df25922af5e57f3cd4ab3c862b418733eaede25acf28e8400e8381d",
+      "included_in_source_export": false
+    },
+    "45000": {
+      "filename": "model_45000.pt",
+      "run_directory": "2026-10-10_18-19-24_ik_execution_v3_bcd_height080_dynamics_symmetry_stand50_resume32000_20261010_181911_4096_from32001",
+      "sha256": "c53e0c3ecb1aabcd8ee81c15a432e8a972453f90cb665d49d644cb228eacd2d4",
+      "included_in_source_export": false
+    },
+    "50000": {
+      "filename": "model_50000.pt",
+      "run_directory": "2026-10-10_18-19-24_ik_execution_v3_bcd_height080_dynamics_symmetry_stand50_resume32000_20261010_181911_4096_from32001",
+      "sha256": "5b10417ae7eb345c20e9bb0a7da238973768595fca025ea0eea35b91754f75f8",
+      "included_in_source_export": false
+    },
+    "55000": {
+      "filename": "model_55000.pt",
+      "run_directory": "2026-10-10_18-19-24_ik_execution_v3_bcd_height080_dynamics_symmetry_stand50_resume32000_20261010_181911_4096_from32001",
+      "sha256": "13affd110a47330952435f7fca1d2ddcf38e40abbed2681102367ea34f73f4e7",
+      "included_in_source_export": false
+    },
+    "56000": {
+      "filename": "model_56000.pt",
+      "run_directory": "2026-10-10_18-19-24_ik_execution_v3_bcd_height080_dynamics_symmetry_stand50_resume32000_20261010_181911_4096_from32001",
+      "sha256": "1c8c9114a8d9229a144c70f9e3e7428c527dd9de7a5dfd9f150598913e1d3b0c",
+      "included_in_source_export": false
+    }
+  },
+  "saved_params_sha256": {
+    "env.yaml": "bdad876c897bb7fbfe03033cc9866e4f9b7737c544e02bb4009d6fd871d8c72a",
+    "agent.yaml": "3d5ce9583b6e2276ab65722bddf0c91e5fffc8b13556ab893749d83d2ff1135c"
+  },
+  "source_files_verified": 218,
+  "training_source_changes_since_start": [],
+  "hardware_validation": false
+}

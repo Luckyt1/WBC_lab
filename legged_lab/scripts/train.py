@@ -66,6 +66,7 @@ parser.add_argument('--elf3_symmetry', action='store_true',
                     help='BXI mirror augmentation and actor consistency, including dynamics labels.')
 parser.add_argument('--liftoff_rewards', action='store_true',
                     help='B+C+D: standing-only CoM midpoint, lateral knee width and moving load transfer.')
+parser.add_argument('--ik_arm_bank', type=Path, help='Procedural deployment-IK reach/hold/return training bank.')
 parser.add_argument('--disable_symmetry_on_resume', action='store_true',
                     help='Explicitly remove symmetry while auditing all other continued training settings.')
 
@@ -74,6 +75,9 @@ cli_args.add_rsl_rl_args(parser)
 # append AppLauncher cli args
 AppLauncher.add_app_launcher_args(parser)
 args_cli, hydra_args = parser.parse_known_args()
+if args_cli.ik_arm_bank and (args_cli.task != 'walk_elf3_tang_bxi_robust' or not (args_cli.from_scratch or args_cli.resume_auxiliary_training)
+                            or args_cli.teleop_curriculum_stage is not None):
+    parser.error('--ik_arm_bank requires fresh or audited resumed robust training without gated curriculum')
 if not 0. <= args_cli.teleop_standing_fraction <= 1.:
     parser.error('--teleop_standing_fraction must be between 0 and 1')
 if args_cli.teleop_standing_fraction != .8 and not args_cli.teleop_standing:
@@ -237,6 +241,11 @@ def train():
     elif args_cli.scratch_stage is not None or args_cli.stage_report is not None:
         raise ValueError('Scratch stage options require walk_elf3_tang_bxi_scratch')
 
+    ik_recipe = None
+    if args_cli.ik_arm_bank:
+        from legged_lab.envs.elf3_tang.ik_training import configure_ik_training
+        ik_recipe = configure_ik_training(env_cfg, args_cli.ik_arm_bank)
+
     if args_cli.distributed:
         env_cfg.sim.device = f"cuda:{app_launcher.local_rank}"
         agent_cfg.device = f"cuda:{app_launcher.local_rank}"
@@ -254,6 +263,11 @@ def train():
     if agent_cfg.run_name:
         log_dir += f"_{agent_cfg.run_name}"
     log_dir = os.path.join(log_root_path, log_dir)
+    if ik_recipe is not None:
+        import json
+        os.makedirs(log_dir, exist_ok=True)
+        (Path(log_dir)/'ik_training.json').write_text(json.dumps(ik_recipe, indent=2)+'\n')
+        print('[IK_RECIPE]', json.dumps(ik_recipe), flush=True)
     runner_class: OnPolicyRunner | AmpOnPolicyRunner = eval(agent_cfg.runner_class_name)
     if args_cli.elf3_symmetry:
         from legged_lab.envs.elf3_tang.symmetry import validate_environment
@@ -290,7 +304,7 @@ def train():
         evidence = record_resume(runner, resume_path, log_dir, target_height=args_cli.pelvis_height,
                                  curriculum_stage=args_cli.teleop_curriculum_stage,
                                  disable_symmetry=args_cli.disable_symmetry_on_resume,
-                                 mode=args_cli.auxiliary_supervision)
+                                 mode=args_cli.auxiliary_supervision,ik_bank=args_cli.ik_arm_bank)
         print('[AUXILIARY_RESUME]', json.dumps(evidence), flush=True)
     if args_cli.auxiliary_supervision is not None:
         import hashlib
@@ -354,7 +368,8 @@ def train():
         print('[FRESH_START]', json.dumps(metadata), flush=True)
 
     try:
-        runner.learn(num_learning_iterations=agent_cfg.max_iterations, init_at_random_ep_len=True)
+        runner.learn(num_learning_iterations=agent_cfg.max_iterations,
+                     init_at_random_ep_len=not (ik_recipe and ik_recipe['recipe'] in ('reach_hold_return_v2','reach_hold_return_v3')))
     finally:
         if runner.writer is not None:
             runner.writer.close()

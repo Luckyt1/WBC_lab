@@ -51,9 +51,35 @@ python tools/verify_elf3_bxi_usd.py --asset resources/elf3_bxi_31 --headless
 
 参考 URDF SHA-256：`6ede896d8718593927e96953cee0ce66c2c56eacd6bec50f86604962d53a0410`。碰撞几何 JSON 和关节约定绑定这一版本；更换机器人模型时需重新核对。
 
-## 4. 上肢动作数据
+## 4. IK 环境与原生模块
 
-需要已重定向到 G1 关节顺序的 AMASS 数据，不是原始 AMASS 文件。每个 `*_jpos.npy` 为 `(T,36)`：根位置 3 维、根四元数 4 维、29 个关节位置。加载器从关节块中取出 14 个手臂关节，经 ELF3 映射与保护处理后作为参考。
+数值 IK 使用 Pinocchio。本地来源环境的 Pinocchio 为 4.1.0、NumPy 为 2.4.6；
+Isaac 环境仍使用 NumPy 1.x。为避免依赖冲突，单独建立 Python 3.11 IK 环境：
+
+```bash
+python3.11 -m venv .venv-ik
+.venv-ik/bin/python -m pip install torch==2.7.0 --index-url https://download.pytorch.org/whl/cpu
+.venv-ik/bin/python -m pip install -r requirements/ik.txt
+```
+
+不要在 IK 环境安装根目录的基础依赖集合（它面向 Isaac/NumPy 1.x）。
+从仓库根目录直接运行 IK 工具，工具自行添加源码路径。
+在 `.env` 设置 `ELF3_IK_PYTHON` 为该环境 Python 的绝对路径。
+
+Ruckig 的离线 C++ 扩展需 C++17 编译器与 OpenMP（Ubuntu 可安装 `build-essential`），
+以及用于头文件的 PyTorch。训练环境和 IK 环境均为 Python 3.11 时，可共用同一 Python ABI 的产物：
+
+```bash
+python tools/build_arm_ruckig.py
+.venv-ik/bin/python -c "import sys; sys.path.insert(0, 'legged_lab/envs/elf3_tang/wbc'); import _arm_ruckig"
+```
+
+切换 Python ABI 后需重新编译；`.so` 不提交 Git。项目不调用 Ruckig 云端服务。
+上游 IK 文件与完整 v3 轨迹库的准备见 [IK 数据说明](ik-data.md)。
+
+## 5. AMASS 保留评估数据
+
+IK 训练本身使用 IK 轨迹库。默认监督程序每 5,000 轮的完整评估还使用已重定向到 G1 关节顺序的 AMASS 数据，不是原始 AMASS 文件。每个 `*_jpos.npy` 为 `(T,36)`：根位置 3 维、根四元数 4 维、29 个关节位置。加载器从关节块中取出 14 个手臂关节，经 ELF3 映射与保护处理后作为参考。
 
 `ELF3_AMASS_DIR` 可以指向以下任一目录的上层：
 
@@ -64,7 +90,7 @@ python tools/verify_elf3_bxi_usd.py --asset resources/elf3_bxi_31 --headless
 
 按 AMASS 及所用重定向数据发布方的条款取得数据。本仓库不附带数据或自动下载脚本；相关加载代码来源见第三方说明。
 
-## 5. 本机配置与预检
+## 6. 本机配置与预检
 
 ```bash
 cp .env.example .env
@@ -72,7 +98,7 @@ cp .env.example .env
 set -a
 source .env
 set +a
-python scripts/check_resources.py --deployment
+python scripts/check_resources.py --deployment --amass
 python scripts/train_current.py --output logs/my_run --dry-run
 ```
 

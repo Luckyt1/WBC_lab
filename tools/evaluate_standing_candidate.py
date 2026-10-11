@@ -2,9 +2,11 @@
 import argparse
 import os
 from pathlib import Path
-from legged_lab.paths import deployment_framework, deployment_mod, mujoco_xml
 import subprocess
 import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from legged_lab.paths import deployment_framework, deployment_mod, mujoco_xml
 
 
 def main():

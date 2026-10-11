@@ -78,6 +78,8 @@ class Elf3Env(VecEnv):
     def arm_position_target(self):
         if self.arm_targets is not None:
             return self.arm_targets
+        if getattr(self, 'use_ik', False):
+            return self.ik_motion.target
         return self.amass_motion.target if self.use_amass else self.random_arm_target
 
     def __init__(
@@ -335,9 +337,37 @@ class Elf3Env(VecEnv):
         self.arm_diagnostics = ArmMotionDiagnostics(
             self.num_envs, len(self.arm_joint_ids), self.step_dt, self.device)
         source = getattr(self.cfg.arm_motion, "source", "random")
-        if source not in ("random", "amass_elf3"):
+        if source not in ("random", "amass_elf3", "ik_elf3"):
             raise ValueError(f"Unknown arm motion source: {source}")
         self.use_amass = source == "amass_elf3"
+        self.use_ik = source == 'ik_elf3'
+        if self.use_ik:
+            from .wbc.ik_arm_motion import IkArmMotion
+            from .wbc.arm_guard import ArmCollisionGuard
+            from .wbc.arm_gravity import ArmGravity
+            arm_cfg = self.cfg.arm_motion
+            names = [self.robot.data.joint_names[i] for i in self.arm_joint_ids]
+            self.ik_motion = IkArmMotion(arm_cfg.ik_bank_path, arm_cfg.ik_split, names,
+                self.robot.data.default_joint_pos[:, self.arm_joint_ids], self.step_dt)
+            limits = torch.tensor(self.ik_motion.manifest['joint_limits'], device=self.device)
+            self.ik_limits = limits.expand(self.num_envs, -1, -1)
+            self.arm_guard = ArmCollisionGuard(names, self.robot.data.body_names, self.ik_limits,
+                self.device, margin=arm_cfg.guard_margin, max_velocity=arm_cfg.guard_max_velocity, dt=self.step_dt,
+                geometry_mode=self.ik_motion.manifest['recipe'].get('guard_geometry','capsule_v1'))
+            self.arm_pose_tracker = None
+            if self.ik_motion.manifest['recipe'].get('waist_pose_correction',False):
+                from .wbc.arm_pose_tracker import ArmPoseTracker
+                self.arm_pose_tracker = ArmPoseTracker(self.ik_motion.manifest,self.device)
+            self.arm_gravity = ArmGravity(self.device)
+            self.arm_executor = None
+            if self.ik_motion.manifest['recipe'].get('executor')=='predictive_ruckig_v3':
+                from .wbc.predictive_arm import PredictiveArmExecutor
+                self.arm_executor = PredictiveArmExecutor(self.arm_guard,self.ik_motion.defaults,
+                    self.ik_motion.manifest['recipe'],self.robot.data.body_names,self.step_dt)
+            self.ik_wrist_ids = [self.robot.data.body_names.index(s+'_wrist_z_link') for s in ('l','r')]
+            print(f'[IK_ARM] split={arm_cfg.ik_split}, targets={len(self.ik_motion.ids)}, '
+                  f'hard={int(self.ik_motion.hard.sum())}, full amplitude from start; '
+                  f'live guard={arm_cfg.guard_margin}m, speed={arm_cfg.guard_max_velocity}rad/s; gravity on')
         if self.use_amass:
             arm_cfg = self.cfg.arm_motion
             if arm_cfg.timing != "legacy_frames":
@@ -647,7 +677,11 @@ class Elf3Env(VecEnv):
         self.arm_diagnostics.reset(env_ids)
         self.bounded_actions[env_ids] = 0.0
         self.random_arm_target[env_ids] = self.robot.data.default_joint_pos[env_ids][:, self.arm_joint_ids]
-        if self.use_amass:
+        if self.use_ik:
+            self.ik_motion.reset(env_ids, self.robot.data.joint_pos[env_ids][:, self.arm_joint_ids])
+            if self.arm_executor is not None:
+                self.arm_executor.reset(env_ids,self.robot.data.joint_pos[env_ids][:,self.arm_joint_ids])
+        elif self.use_amass:
             if self.arm_targets is None:
                 self.amass[env_ids] = self.amass_loader.sample_arm_sequence(
                     len(env_ids), sequence_length=self.cfg.arm_motion.sequence_length,
@@ -721,6 +755,8 @@ class Elf3Env(VecEnv):
         self.random_arm_transition_step[env_ids] = 0
 
     def _get_arm_curriculum_progress(self) -> torch.Tensor:
+        if getattr(self, 'use_ik', False):
+            return torch.ones((), device=self.device)
         if getattr(self, "use_amass", False):
             cfg = self.cfg.arm_motion
             if cfg.amass_scale_end_iteration is None:
@@ -785,7 +821,28 @@ class Elf3Env(VecEnv):
         arm_amass = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
         arm_neutral = torch.zeros_like(arm_amass)
         arm_padded_tail = torch.zeros_like(arm_amass)
-        if self.use_amass:
+        if self.use_ik:
+            arm_reference = (self.ik_motion.step(
+                remaining_s=(self.max_episode_length-self.episode_length_buf)*self.step_dt)
+                if self.arm_targets is None else self.arm_targets).clone()
+            if self.arm_pose_tracker is not None:
+                arm_reference = self.arm_pose_tracker.correct(arm_reference,
+                    self.robot.data.body_pos_w[:,self.pelvis_body_id],self.robot.data.body_quat_w[:,self.pelvis_body_id],
+                    self.robot.data.body_pos_w[:,self.torso_body_id],self.robot.data.body_quat_w[:,self.torso_body_id])
+            arm_neutral = self.ik_motion.neutral.clone()
+            if self.arm_executor is not None:
+                arm_target = self.arm_executor.project(arm_reference,self.robot.data.joint_pos[:,self.arm_joint_ids],
+                    self.robot.data.body_pos_w,self.robot.data.body_quat_w,self.torso_body_id)
+            else:
+                arm_target = self.arm_guard.project(
+                    arm_reference, self.ik_motion.target, self.robot.data.joint_pos[:, self.arm_joint_ids],
+                    self.robot.data.body_pos_w, self.robot.data.body_quat_w, self.torso_body_id)
+            self.ik_motion.target.copy_(arm_target)
+            processed_actions[:, self.arm_joint_ids] = arm_target
+            gravity = rotate_inverse(self.robot.data.body_quat_w[:, self.torso_body_id], self.robot.data.GRAVITY_VEC_W)*9.81
+            self.robot.set_joint_effort_target(self.arm_gravity.compute(
+                self.robot.data.joint_pos[:, self.arm_joint_ids], gravity), joint_ids=self.arm_joint_ids)
+        elif self.use_amass:
             previous_arm_target = self.amass_motion.target.clone() if self.arm_guard is not None else None
             if self.arm_targets is not None:
                 arm_target = self.arm_targets
@@ -825,7 +882,7 @@ class Elf3Env(VecEnv):
             self.num_envs, len(self.feet_cfg.body_ids), dtype=torch.float, device=self.device, requires_grad=False
         )
         for _ in range(self.cfg.sim.decimation):
-            if not self.use_amass and self.arm_targets is None:
+            if not self.use_amass and not self.use_ik and self.arm_targets is None:
                 self._maybe_resample_random_arm_targets()
                 self._update_random_arm_targets()
                 processed_actions[:, self.arm_joint_ids] = self.random_arm_target
@@ -852,6 +909,17 @@ class Elf3Env(VecEnv):
             self.robot.data.joint_pos[:, self.arm_joint_ids],
             self.robot.data.joint_vel[:, self.arm_joint_ids],
             self.command_generator.is_standing_env, arm_amass, arm_neutral, arm_padded_tail)
+        if self.use_ik:
+            wrists = rotate_inverse(self.base_quat_w[:,None,:].expand(-1,2,-1),
+                self.robot.data.body_pos_w[:,self.ik_wrist_ids]-self.robot.data.body_pos_w[:,self.pelvis_body_id,None,:])
+            arm_log.update(self.ik_motion.metrics)
+            from .wbc.arm_guard import quat_mul, inverse
+            wrist_quats = quat_mul(inverse(self.robot.data.body_quat_w[:,self.pelvis_body_id])[:,None,:],
+                                  self.robot.data.body_quat_w[:,self.ik_wrist_ids])
+            arm_log.update(self.ik_motion.tracking_metrics(wrists,wrist_quats,self.robot.data.joint_vel[:,self.arm_joint_ids]))
+            arm_log.update(self.arm_guard.metrics)
+            if self.arm_pose_tracker is not None:
+                arm_log.update(self.arm_pose_tracker.metrics)
 
         if not self.headless:
             self.sim.render()

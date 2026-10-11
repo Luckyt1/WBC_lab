@@ -15,7 +15,8 @@ def summarize_batch(out, state):
     entries += [(variant['variant'], summary) for variant in state['variants'] for summary in variant['evaluations']]
     for label, summary in entries:
         gait = json.loads(Path(summary['gait_report']).read_text())
-        mj = json.loads(Path(summary['deployment_diagnostics']).read_text())['results']
+        mj_report = json.loads(Path(summary['deployment_diagnostics']).read_text())
+        mj = mj_report['results']
         forward = gait['profiles']['bootstrap']['scenarios']['forward_030']
         standing = mj['zero']
         arcs = {k: dict(completed=v['completed'], velocity_mae=v.get('velocity_mae'))
@@ -23,6 +24,7 @@ def summarize_batch(out, state):
         row = dict(variant=label, iteration=summary['health']['iteration'], checkpoint=summary['checkpoint'],
                    original_gates_passed=summary['original_gates_passed'],
                    mixed_gates_passed=summary.get('mixed_yaw_gates', {}).get('passed'),
+                   mujoco_terrain=mj_report.get('terrain', {'mode':'legacy/unrecorded'}),
                    isaac_forward=forward, mujoco_forward=mj['forward'], mujoco_fast=mj['fast'],
                    mujoco_zero=standing, mujoco_walk_stop=mj['walk_stop'], mujoco_arcs=arcs)
         if 'auxiliary_prediction_report' in summary:
@@ -52,18 +54,19 @@ def summarize_batch(out, state):
     lines = [title, '', f"状态：`{state['status']}`；更新时间：{state['updated_at']}。", '',
              description,
              reference, '',
-             '| 分支 / 轮数 | 原有验收 | 移动转向验收 | Isaac 腾空中位数 L/R（ms） | 完整支撑摆动 L/R（次） | MuJoCo 直行时长（s） | 直行航向变化（°） | 高速时长（s） | 静止漂移（cm） |',
-             '|---|---|---|---|---|---|---|---|---|']
+             '| 分支 / 轮数 | MuJoCo 地形 | 原有验收 | 移动转向验收 | Isaac 腾空中位数 L/R（ms） | 完整支撑摆动 L/R（次） | MuJoCo 直行时长（s） | 直行航向变化（°） | 高速时长（s） | 静止漂移（cm） |',
+             '|---|---|---|---|---|---|---|---|---|---|']
     for r in rows:
         f=r['isaac_forward']; m=r['mujoco_forward']
         air='/'.join(fmt(f[s]['median_air_s']*1000 if f[s]['median_air_s'] is not None else None, 0) for s in ('left','right'))
         counts='/'.join(str(x) for x in f.get('supported_swing_120_350ms_20mm_count', []))
         elapsed=fmt(m.get('elapsed_s'))+(' ✓' if m['completed'] else ' 跌倒')
         drift=r['mujoco_zero'].get('max_planar_offset_m')
-        lines.append(f"| {r['variant']} / {r['iteration']} | {'通过' if r['original_gates_passed'] else '未通过'} | "
+        terrain = r['mujoco_terrain']['mode']
+        lines.append(f"| {r['variant']} / {r['iteration']} | {terrain} | {'通过' if r['original_gates_passed'] else '未通过'} | "
                      f"{'通过' if r['mixed_gates_passed'] else '未通过'} | {air} | {counts} | {elapsed} | "
                      f"{fmt(m.get('yaw_change_deg'))} | {fmt(r['mujoco_fast'].get('elapsed_s'))} | {fmt(drift*100 if drift is not None else None)} |")
-    lines += ['', '完整支撑摆动：仅统计测量窗口内完整的 120–350 ms 腾空，脚底至少抬起 20 mm，且另一脚持续支撑。统计限于存活试次；它不是单独的部署通过条件。',
+    lines += ['', '地形 flat 为平地，source 保留 XML 障碍物；legacy/unrecorded 的旧结果未记录地形，不能直接比较跌倒率。', '完整支撑摆动：仅统计测量窗口内完整的 120–350 ms 腾空，脚底至少抬起 20 mm，且另一脚持续支撑。统计限于存活试次；它不是单独的部署通过条件。',
               '新增移动转向验收：前进/后退各 ±0.1 rad/s，速度 MAE 上限为 0.08、0.08、0.05；仍要求每组至少 31/32 存活及膝关节限幅通过。',
               'MuJoCo 直行目标持续 60 秒，高速目标持续 20 秒；航向变化仅应在相同测试时长、均未跌倒时比较。',
               '单次种子训练用于比较方向，不代表跨种子稳定性。流程不会自动替换部署模型。', '']

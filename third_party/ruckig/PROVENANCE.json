@@ -1,0 +1,7 @@
+{
+  "repository": "https://github.com/pantor/ruckig",
+  "tag": "v0.15.3",
+  "commit": "37b6e7a4c60f5befd2506741d5f7d0ae7eefb3db",
+  "license": "MIT",
+  "usage": "Local state-to-state community trajectory calculation only. Cloud client and Python upstream wrapper are not compiled."
+}

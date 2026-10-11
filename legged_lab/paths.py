@@ -13,6 +13,15 @@ def amass_root():
     return Path(os.environ.get('ELF3_AMASS_DIR', ROOT / 'resources/dataset')).expanduser().absolute()
 
 
+def ik_source_dir():
+    """Verified external upstream files, flattened by prepare_ik_source.py."""
+    return Path(os.environ.get('ELF3_IK_SOURCE_DIR', ROOT / 'resources/elf3_ik_upstream')).expanduser().absolute()
+
+
+def ik_bank_dir():
+    return Path(os.environ.get('ELF3_IK_BANK', ROOT / 'resources/ik_bank_v3')).expanduser().absolute()
+
+
 def deployment_framework():
     value = os.environ.get('ELF3_BXI_FRAMEWORK_DIR')
     if not value:

@@ -82,8 +82,36 @@ def expected_agent_without_symmetry(agent):
     return result
 
 
+def expected_ik_recipe(before,bank):
+    """Allow only the declared, validated arm-execution migration."""
+    result=deepcopy(before)
+    if before.get('ik_recipe') not in ('reach_hold_return_v1','reach_hold_return_v2','reach_hold_return_v3'):
+        raise ValueError('IK continuation requires an existing IK-trained checkpoint')
+    bank=Path(bank).resolve(strict=True)
+    manifest=json.loads((bank/'manifest.json').read_text())
+    if manifest.get('version') not in (2,3):
+        raise ValueError('IK continuation requires a validated v2/v3 bank')
+    previous=Path(before['arm_motion']['ik_bank_path'])
+    if previous.resolve()!=bank:
+        digest=hashlib.sha256((previous/'manifest.json').read_bytes()).hexdigest()
+        if manifest.get('parent_manifest_sha256')!=digest:
+            raise ValueError('Validated bank does not descend from the checkpoint bank')
+    digest=hashlib.sha256((bank/'train.npz').read_bytes()).hexdigest()
+    if digest!=manifest['bank_sha256']['train']:
+        raise ValueError('Validated bank hash mismatch')
+    if not manifest['counts']['train'] or any(t.get('execution_validation',{}).get('method')=='rejected'
+                                            for t in manifest['targets']):
+        raise ValueError('Training bank contains unvalidated targets')
+    arm=result['arm_motion']
+    arm.update(ik_bank_path=str(bank),ik_bank_sha256=digest,guard_margin=str(manifest['recipe']['guard_margin']),
+               guard_max_velocity=str(manifest['recipe']['max_velocity']))
+    result['scene']['max_episode_length_s']=str(manifest['recipe']['max_episode_s'])
+    result['ik_recipe']=f"reach_hold_return_v{manifest['version']}"
+    return result
+
+
 def verify_recipe(source_run, resumed_run, target_height=None, curriculum_stage=None,
-                  disable_symmetry=False):
+                  disable_symmetry=False,ik_bank=None):
     def read(run, filename):
         return yaml.load((Path(run)/'params'/filename).read_text(), Loader=yaml.BaseLoader)
     before, after = read(source_run, 'env.yaml'), read(resumed_run, 'env.yaml')
@@ -93,6 +121,8 @@ def verify_recipe(source_run, resumed_run, target_height=None, curriculum_stage=
     if curriculum_stage is not None:
         from tools.teleop_curriculum import expected_recipe
         before = expected_recipe(before, curriculum_stage)
+    if ik_bank is not None:
+        before=expected_ik_recipe(before,ik_bank)
     assert_equal(before, after, 'environment')
     old_agent, new_agent = read(source_run, 'agent.yaml'), read(resumed_run, 'agent.yaml')
     if disable_symmetry:
@@ -103,7 +133,7 @@ def verify_recipe(source_run, resumed_run, target_height=None, curriculum_stage=
 
 
 def record_resume(runner, checkpoint, run, target_height=None, curriculum_stage=None,
-                  disable_symmetry=False, mode='dynamics'):
+                  disable_symmetry=False, mode='dynamics',ik_bank=None):
     checkpoint, run = Path(checkpoint), Path(run)
     source = torch.load(checkpoint, map_location='cpu', weights_only=False)
     restored = dict(model_state_dict=runner.alg.policy.state_dict(),
@@ -119,7 +149,7 @@ def record_resume(runner, checkpoint, run, target_height=None, curriculum_stage=
                         auxiliary_cfg=runner.alg.auxiliary_cfg)
     count = audit_restored(source, restored, runner.alg.learning_rate, mode)
     recipe_hash = verify_recipe(checkpoint.parent, run, target_height=target_height,
-                                curriculum_stage=curriculum_stage, disable_symmetry=disable_symmetry)
+                                curriculum_stage=curriculum_stage, disable_symmetry=disable_symmetry,ik_bank=ik_bank)
     # Checkpoints store the last completed zero-based iteration.
     runner.current_learning_iteration = count
     if hasattr(runner.env, 'set_training_iteration'):
@@ -149,10 +179,16 @@ def record_resume(runner, checkpoint, run, target_height=None, curriculum_stage=
         from tools.fixed_pelvis_height import checkpoint_height
         evidence['height_recipe_change'] = dict(from_m=checkpoint_height(checkpoint),
                                                to_m=float(target_height),
-                                               only_command_height_changed=curriculum_stage is None)
+                                               only_command_height_changed=curriculum_stage is None and ik_bank is None)
     if curriculum_stage is not None:
         from tools.teleop_curriculum import checkpoint_stage
         evidence['teleop_curriculum'] = dict(from_stage=checkpoint_stage(checkpoint),
                                             to_stage=curriculum_stage, only_declared_difficulty_fields_changed=True)
+    if ik_bank is not None:
+        evidence['ik_execution_change']=dict(bank=str(Path(ik_bank).resolve()),
+            manifest_sha256=hashlib.sha256((Path(ik_bank)/'manifest.json').read_bytes()).hexdigest(),
+            policy_and_both_optimizers_preserved=True,
+            allowed_changes=['bank path/hash','guard margin/geometry','arrival-gated phases','waist pose correction',
+                'episode time budget','declared manifest executor and timing constraints'])
     (run/'resume_start.json').write_text(json.dumps(evidence, indent=2)+'\n')
     return evidence

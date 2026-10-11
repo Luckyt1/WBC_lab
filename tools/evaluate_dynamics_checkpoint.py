@@ -2,9 +2,11 @@
 import argparse
 import os
 from pathlib import Path
-from legged_lab.paths import deployment_framework, deployment_mod, mujoco_xml
 import subprocess
 import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from legged_lab.paths import deployment_framework, deployment_mod, mujoco_xml
 
 from run_focused_validation import ROOT, now, read, write
 from run_scratch_training import health
@@ -18,9 +20,14 @@ def main():
     parser.add_argument('--checkpoint',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--deployment_python',type=Path,required=True)
+    parser.add_argument('--ik-bank',type=Path)
+    parser.add_argument('--ik-python',type=Path)
+    parser.add_argument('--ik-full',action='store_true')
     parser.add_argument('--reuse-isaac',action='store_true',
                         help='Validate and reuse completed Isaac traces; rerun deployment/probe stages only.')
     args=parser.parse_args()
+    if args.ik_bank and not args.ik_python:
+        parser.error('--ik-bank requires --ik-python')
     checked=health(args.checkpoint,std_bounds=(.1,.6))
     out=args.output
     out.mkdir(parents=True,exist_ok=True)
@@ -48,15 +55,24 @@ def main():
     subprocess.run([str(args.deployment_python),'-u','tools/evaluate_actor_auxiliary.py',
                     '--checkpoint',str(args.checkpoint),'--probes',str(out),
                     '--output',str(out/'auxiliary_prediction.json')],cwd=ROOT,check=True)
-    mj=read(out/'mujoco_gait/report.json')['results']
+    mj_report=read(out/'mujoco_gait/report.json')
+    mj=mj_report['results']
     mixed=evaluate_gates(report,('arc_forward_pos','arc_forward_neg','arc_backward_pos','arc_backward_neg'),(.08,.08,.05))
+    ik_report = None
+    if args.ik_bank:
+        subprocess.run([str(args.ik_python),'-u','tools/evaluate_ik_policy.py',
+            '--bank',str(args.ik_bank),'--onnx',str(out/'policy.onnx'),'--output',str(out/'ik_workspace')]
+            + (['--full'] if args.ik_full else []),cwd=ROOT,
+            env=dict(environment,OPENBLAS_NUM_THREADS='1',OMP_NUM_THREADS='1',MKL_NUM_THREADS='1'),check=True)
+        ik_report = read(out/'ik_workspace/report.json')['summary']
     write(out/'summary.json',dict(checkpoint=str(args.checkpoint.resolve()),health=checked,
           completed_at=now(),gates=gates,original_gates_passed=gates['passed'] and standing['passed'],
           mixed_yaw_gates=mixed,standing=standing,isaac_forward=gait['profiles']['bootstrap']['scenarios']['forward_030'],
           mujoco_forward=mj['forward'],mujoco_fast=mj['fast'],mujoco_zero=mj['zero'],mujoco_walk_stop=mj['walk_stop'],
+          mujoco_terrain=mj_report.get('terrain', {'mode':'legacy/unrecorded'}),
           report_dir=str(out),auxiliary_prediction_report=str(out/'auxiliary_prediction.json'),
           probe_method='Held-out rollouts of this checkpoint. Distribution changes with checkpoint; not a fixed cross-age dataset.',
-          auto_promote=False))
+          ik_workspace=ik_report,auto_promote=False))
 
 
 def write_comparison(out,state):
@@ -79,23 +95,35 @@ def write_comparison(out,state):
            f"本段已记录更新：{state['completed_updates']:,} / {state['planned_updates']:,}；累计 {state['initial_iteration'] + state['completed_updates']:,} / {target:,}。",'',
            method,
            '测试时长仅表示存活情况；是否按指令行走必须同时看实际速度和速度误差。','',
-           '| 检查点 | 直行测试时长 | 实际前向速度（目标 0.3 m/s） | 前向速度 MAE | 高速实际速度（目标 0.6 m/s） | 静止测试 | 静止最大漂移 cm | 完整摆动 L/R |',
-           '|---|---|---|---|---|---|---|---|']
+           '| 检查点 | MuJoCo 地形 | 直行测试时长 | 实际前向速度（目标 0.3 m/s） | 前向速度 MAE | 高速实际速度（目标 0.6 m/s） | 静止测试 | 静止最大漂移 cm | 完整摆动 L/R |',
+           '|---|---|---|---|---|---|---|---|---|']
     for row in state['evaluations']:
         forward,fast,zero=row['mujoco_forward'],row['mujoco_fast'],row['mujoco_zero']
         def vx(case,key):
             return case.get(key,[None])[0]
         drift=zero.get('max_planar_offset_m')
         counts='/'.join(str(x) for x in row['isaac_forward'].get('supported_swing_120_350ms_20mm_count',[]))
-        lines.append(f"| {row['health']['iteration']} | {duration(forward)} | {fmt(vx(forward,'mean_velocity_yaw'))} | "
+        terrain = row.get('mujoco_terrain', {}).get('mode', 'legacy/unrecorded')
+        lines.append(f"| {row['health']['iteration']} | {terrain} | {duration(forward)} | {fmt(vx(forward,'mean_velocity_yaw'))} | "
                      f"{fmt(vx(forward,'velocity_mae'))} | {fmt(vx(fast,'mean_velocity_yaw'))} | {duration(zero)} | "
                      f"{fmt(drift*100 if drift is not None else None,2)} | {counts} |")
-    lines += ['', '完整摆动仍采用 120–350 ms 腾空、足底至少 20 mm、另一脚持续支撑的诊断定义。',
+    lines += ['', 'MuJoCo flat 表示仅保留原平地碰撞；source 保留 XML 障碍物。legacy/unrecorded 是未记录地形的旧协议，不能与 flat 的跌倒率直接比较。', '完整摆动仍采用 120–350 ms 腾空、足底至少 20 mm、另一脚持续支撑的诊断定义。',
               '每个检查点另记录三类扰动、移动转向、航向变化和走停漂移；详细结果在 evaluations/ 对应目录。',
               '辅助预测使用该检查点自己的独立测试轨迹；不同年龄的数据分布不同，误差下降不单独证明控制改善。',
               '单种子长程训练不构成跨种子验证。任何模型都不自动部署。','']
     for error in state.get('evaluation_errors',[]):
         lines.append(f"评估程序异常：{error['checkpoint']}，退出码 {error['returncode']}。")
+    if state.get('ik_arm_bank'):
+        execution=('已校验 IK 路径、实时腰部补偿、到位判定和共用防碰撞/限速；原目标池保留，被拒绝目标仍参与评估。'
+                   if state.get('ik_execution_version',1)>=2 else '在线使用原始 IK、实际关节反馈、与训练共用的限速/防碰撞及重力补偿。')
+        lines += ['', '## IK 未见目标与失败姿态回归', '',
+                  execution+' 未见目标与已训练失败目标分别统计；旧 AMASS 测试只作能力保留检查。', '',
+                  '| 检查点 | 未见目标通过/测试 | 失败姿态回归通过/测试 |', '|---|---|---|']
+        for row in state['evaluations']:
+            ik = row.get('ik_workspace')
+            if ik:
+                a,b = ik['unseen'],ik['regression']
+                lines.append(f"| {row['health']['iteration']} | {a['passed']}/{a['trials']} | {b['passed']}/{b['trials']} |")
     (out/'RESULTS.md').write_text('\n'.join(lines))
 
 

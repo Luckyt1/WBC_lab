@@ -1,0 +1,14 @@
+{
+  "description": "Fresh IK v3 arm disturbance PPO training; fixed 0.8 m, stand50, symmetry, dynamics auxiliary heads, BCD; no performance-gated arm curriculum",
+  "task": "walk_elf3_tang_bxi_robust",
+  "max_iterations": 80000,
+  "num_envs": 4096,
+  "evaluation_interval": 5000,
+  "save_interval": 500,
+  "auxiliary_supervision": "dynamics",
+  "teleop_standing": true,
+  "teleop_standing_fraction": 0.5,
+  "pelvis_height": 0.8,
+  "elf3_symmetry": true,
+  "liftoff_rewards": true
+}

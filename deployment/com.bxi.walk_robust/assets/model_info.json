@@ -8,7 +8,7 @@
   "action_clip": 100.0,
   "soft_joint_pos_limit_factor": 0.9,
   "control_period_s": 0.02,
-  "height_command": 0.8235,
+  "height_command": 0.8,
   "waist_yaw_command": 0.0,
   "imu_frame": "torso_link",
   "actor_frame": "waist_z_link",

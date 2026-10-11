@@ -43,6 +43,7 @@ parser.add_argument("--pelvis_height", type=float, default=None,
 parser.add_argument("--command", type=float, nargs=5, metavar=("VX", "VY", "WZ", "HEIGHT", "WAIST_YAW"),
                     help="Fixed walk_elf3_tang command; height is pelvis height in metres, yaw is radians.")
 parser.add_argument("--max_steps", type=int, default=None, help="Stop playback after this many control steps.")
+parser.add_argument("--ik_arm_bank", type=Path, help="Use the explicit IK bank instead of the legacy AMASS reference.")
 
 # append RSL-RL cli arguments
 cli_args.add_rsl_rl_args(parser)
@@ -94,6 +95,11 @@ def play():
     env_cfg.scene.max_episode_length_s = 40.0
     env_cfg.scene.num_envs = 50
     env_cfg.scene.env_spacing = 2.5
+    if args_cli.ik_arm_bank:
+        if not is_tang:
+            raise ValueError('--ik_arm_bank requires an ELF3 Tang task')
+        from legged_lab.envs.elf3_tang.ik_training import configure_ik_training
+        configure_ik_training(env_cfg, args_cli.ik_arm_bank)
     if is_tang:
         # Keep the task's five-command curriculum and arm disturbance configuration.
         env_cfg.domain_rand.events.push_robot = None

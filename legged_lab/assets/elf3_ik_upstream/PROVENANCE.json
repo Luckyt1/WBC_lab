@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/konodoki/com.bxi.upper_body_teleop",
+  "commit": "47087655a6c30f79175f3909ef5eb8131da74877",
+  "sha256": {
+    "arm_bridge.py": "dab9846c0bb0aa1a0bcd311466cf36e8313003019a7c60dc9d86cc64a71a9afa",
+    "gravity.py": "adaaae4f736533b82ef46bfa1285e9c359d904d71a08f3bbeaec77a92537a2ca",
+    "mod.yaml": "5f1191892d85c2d78b91975c88f96072dc2e12f443461bd3b87a8b734a8409db",
+    "elf3-dof31.urdf": "c0b98c7cd07183e441e66b40932bef9c500c2d59d9f6a2af370022df09270607"
+  },
+  "usage": "Unmodified upstream files. Only numerical IK classes are imported, without ROS or hardware transport."
+}

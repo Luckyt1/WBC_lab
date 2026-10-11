@@ -65,6 +65,9 @@ class ArmMotionCurriculumCfg:
     # WBC playback: full amplitude from the first control step. The random
     # settings below remain available for reproducing the previous task.
     source: str = "amass_elf3"
+    ik_bank_path: str | None = None
+    ik_split: str = "train"
+    ik_bank_sha256: str | None = None
     dataset_path: str = str(amass_root())
     sequence_length: int = 1000
     timing: str = "legacy_frames"

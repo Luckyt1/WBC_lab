@@ -1,0 +1,71 @@
+# Local runs and generated artifacts
+logs/
+output/
+outputs/
+results/
+checkpoints/
+wandb/
+*.pt
+*.pth
+*.onnx
+*.rknn
+*.npz
+*.npy
+*.pkl
+*.pickle
+*.zip
+*.tar
+*.gz
+*.mp4
+events.out.tfevents.*
+
+# External datasets, robot assets and SDKs
+dataset/
+datasets/
+resources/*
+!resources/README.md
+*.usd
+*.usda
+*.usdc
+*.stl
+*.STL
+*.obj
+*.dae
+IsaacLab/
+isaacLab/
+external/
+
+# Python/build/editor files
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+.venv/
+.venv-*/
+venv/
+.idea/
+.vscode/
+.DS_Store
+*.swp
+
+# Machine settings and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.agents/
+.codex/
+:memory:*
+
+# IK banks and compiled native extension
+data/
+*.so
+*.o
+# Small sampled test fixtures, not the production trajectory bank
+!tests/fixtures/ik_banks/**/*.npz

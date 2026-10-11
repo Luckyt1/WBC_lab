@@ -1,0 +1,21 @@
+{
+  "checked_at": "2026-10-11T10:02:03.216571+08:00",
+  "archived_training_source_files_verified": 218,
+  "source_changes_since_training_start": [],
+  "python_syntax_files_checked": 203,
+  "native_ruckig_build": "passed on Python 3.11",
+  "cpu_tests": {
+    "tests": 255,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 255
+  },
+  "test_environment": "Existing isolated Pinocchio/MuJoCo environment with the base Python environment appended for PyTorch and pytest; not a clean installation test.",
+  "resource_preflight": "passed with existing robot, BXI, upstream IK, production bank and AMASS resources",
+  "fresh_training_dry_run": "passed",
+  "resume_45000_dry_run": "passed; 34999 new updates to 80000 total",
+  "new_training_or_simulator_started": false,
+  "model_weights_included": false,
+  "compiled_extension_included": false
+}

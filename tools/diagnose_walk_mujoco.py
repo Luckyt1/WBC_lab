@@ -101,6 +101,8 @@ def main():
     parser.add_argument('--xml', type=Path, required=True)
     parser.add_argument('--onnx', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--terrain', choices=('flat', 'source'), default='flat',
+                        help='Flat plane for Isaac comparisons; source retains XML obstacles.')
     parser.add_argument('--cases', nargs='+', choices=tuple(CASES), default=DEFAULT_CASES)
     parser.add_argument('--include-mixed-yaw', action='store_true')
     parser.add_argument('--seed', type=int, default=20260928)
@@ -119,6 +121,8 @@ def main():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     sim = module.Simulation(args.xml, onnx=args.onnx)
+    from mujoco_evaluation_terrain import configure_terrain, first_obstacle_contact
+    terrain = configure_terrain(sim.model, args.terrain)
     from fixed_pelvis_height import apply_onnx_height
     height_command = apply_onnx_height(sim.policy, args.onnx)
     feet = np.array([sim.model.body(s+'_ankle_x_link').id for s in ('l', 'r')])
@@ -173,6 +177,7 @@ def main():
                   policy_py_sha256=hashlib.sha256((args.mod/'policy.py').read_bytes()).hexdigest(),
                   seed=args.seed, physics_dt=.005, policy_dt=DT, arms='fixed_training_default',
                   height_command=height_command,
+                  terrain=terrain,
                   noise='uniform independent, matching current Isaac actor noise scales',
                   noise_component=args.noise_component,
                   joint_velocity_filter_alpha=args.joint_velocity_filter_alpha,
@@ -189,6 +194,7 @@ def main():
             sim.reset()
             filtered_velocity = None
             heading_reference = None
+            obstacle_contact = None
             hist = {k: [] for k in ('time', 'position', 'yaw', 'velocity_yaw', 'command', 'contact',
                                   'requested_command', 'normal_force', 'foot_clearance', 'contact_point_speed', 'joint_pos', 'clipped')}
             for step in range(round(seconds/DT)):
@@ -208,6 +214,8 @@ def main():
                     sim.data.qvel[:2] = .8
                     mujoco.mj_forward(sim.model, sim.data)
                 sim.advance(cmd)
+                if obstacle_contact is None:
+                    obstacle_contact = first_obstacle_contact(sim.model, sim.data)
                 rotation = sim.data.xmat[sim.pelvis].reshape(3, 3)
                 yaw = np.arctan2(rotation[1, 0], rotation[0, 0])
                 vel = np.empty(6)
@@ -249,6 +257,7 @@ def main():
                 result = dict(completed=False, failure_before_measurement=True)
             else:
                 result = summarize(arrays, name)
+            result['first_obstacle_contact'] = obstacle_contact
             report['results'][name] = result
             report['imu_parity_max_abs_error'] = dict(angular_velocity=float(parity_max[0]), gravity=float(parity_max[1]))
             (args.output/'report.json').write_text(json.dumps(report, indent=2)+'\n')

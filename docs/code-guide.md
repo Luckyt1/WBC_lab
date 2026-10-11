@@ -1,68 +1,60 @@
-# 代码与实验说明
+# 训练与评估代码
 
-## 当前路径
+## 控制分工
 
-| 功能 | 入口 |
-| --- | --- |
-| 当前配方 | `configs/ppo_symmetry_dynamics.json`、`scripts/train_current.py` |
-| 训练监督、状态保存、定期评估 | `tools/run_walk_robust_training.py` |
-| 环境步进、观测、上肢执行 | `legged_lab/envs/elf3_tang/elf3_env.py` |
-| 基础与 robust 设置 | `walk_cfg.py`、`walk_bxi_cfg.py`、`walk_robust_cfg.py` |
-| 时间课程 | `walk_robust_curriculum.py` |
-| 站立采样与奖励 | `teleop_standing.py`、`standing_position*.py`、`rewards.py` |
-| 上肢数据与保护 | `wbc/amass.py`、`wbc/elf3_arm_motion.py`、`wbc/arm_guard.py` |
-| 镜像变换 | `symmetry.py` |
-| 辅助监督标签 | `auxiliary.py` |
-| PPO 与辅助损失 | `rsl_rl/rsl_rl/algorithms/ppo.py` |
-| 辅助网络 | `rsl_rl/rsl_rl/modules/actor_auxiliary.py` |
-| 覆盖率、速度、加速度诊断 | `arm_diagnostics.py`、`tools/evaluate_arm_speed.py` |
+`elf3_env.py` 将腰腿动作交给 PPO，将上肢参考交给独立执行器。
+`ik_training.py` 校验轨迹库哈希、切换 IK 输入、固定完整手臂范围和回合预算。
+`wbc/ik_arm_motion.py` 负责分组采样、各运动阶段、到位等待、超时与覆盖日志。
+`wbc/arm_pose_tracker.py`、`arm_guard.py`、`predictive_arm.py`、`arm_gravity.py`
+分别负责腰部姿态补偿、几何检查、参考轨迹约束和重力前馈。
 
-未带完整路径的环境文件均位于 `legged_lab/envs/elf3_tang/`。
+策略观测包含手臂位置和速度，PPO 因此可以学习应对上肢运动。
+`rsl_rl/rsl_rl/modules/actor_auxiliary.py` 从策略特征估计当前骨盆速度、双脚接触；
+动力学分支额外输入当前执行动作，预测下一步腰腿关节速度和骨盆角速度。
+辅助头的监督真值来自仿真，部署导出只保留动作网络。
 
-## 动作与观测
+`symmetry.py` 实现观测、动作和辅助标签镜像；不要求两腿同时做相同动作。
+`liftoff_rewards.py` 的 BCD 配方将重心居中奖励限制在站立，膝距改为骨盆航向系的有符号横向距离，
+行走时增加载荷转移奖励。这里保留这套既有实现，不以提取代码为由调整奖励。
 
-策略输入为 10 帧、每帧 84 维，包含骨盆角速度、投影重力、5 维指令、腰腿关节状态、前一动作和双臂关节状态。Actor 输出 15 维腰腿动作；双臂参考由外部动作模块产生，头部保持设定姿态。真值线速度与接触状态可用于 critic 和训练监督，不是导出 actor 的额外传感器输入。
+## 评估
 
-辅助预测分支复用 actor 特征。当前状态预测目标为骨盆速度与脚接触；动力学分支结合实际执行动作，预测下一步腰腿关节速度和骨盆角速度。训练损失采用分项处理与尺度归一化，部署导出仅保留动作网络。
-
-## 历史实验
-
-当前启动配置使用**随训练轮次变化的课程**。`tools/run_teleop_curriculum.py`、`tools/teleop_curriculum.py` 等性能门槛课程工具仍保留，但默认入口不调用这些控制器。
-
-`liftoff_rewards.py` 与 `--liftoff_rewards` 是历史 BCD 抬脚奖励实验；默认配置未启用。`stand_cfg.py`、`focus_cfg.py`、`standing_refine_cfg.py` 及相关工具用于专项训练或续训，不应与默认从零配方混为一谈。部分继承链保留旧 ELF3 / TienKung 的源码定义，其资产未分发；本文档只覆盖 31 关节 ELF3 robust 任务。
-
-对比实验需记录完整配置、随机种子、训练更新数、同一评估场景与参考动作覆盖率。仅比较总奖励或训练时长，不能判断站立漂移、单脚支撑与有效抬脚是否改善。
-
-## 评估命令
-
-以下完整评估在 Isaac Python 中执行，离线部分由参数指定的 CPU Python 运行：
-
-```bash
-python tools/evaluate_dynamics_checkpoint.py \
-  --checkpoint logs/walk_tang_bxi31_auxiliary_scratch/RUN_DIRECTORY_NAME/model_60000.pt \
-  --output output/eval_60000 \
-  --deployment_python "$ELF3_DEPLOYMENT_PYTHON"
-```
-
-需要检查点同级的 `params/`、匹配的机器人资源与 AMASS 数据。输出包含 Isaac 速度跟踪、站立、步态、辅助预测诊断，以及 MuJoCo 走停/行走评估。完整评估会使用 GPU；避免与正在运行的训练争用显存。
-
-单独查看已导出模型的离线 MuJoCo 播放：
+导出前保留检查点旁 `params/agent.yaml` 与 `params/env.yaml`。以 README 的方式生成 `output/policy.onnx` 后：
 
 ```bash
 PYTHONPATH="$ELF3_BXI_FRAMEWORK_DIR:${PYTHONPATH:-}" \
-  "$ELF3_DEPLOYMENT_PYTHON" deployment/com.bxi.walk_robust/tools/validate_sim.py \
-  --xml "${ELF3_MUJOCO_XML:-$ELF3_BXI_FRAMEWORK_DIR/data/mujoco_simulation/elf3.xml}" \
-  --onnx output/policy.onnx --viewer --seconds 30
+  "$ELF3_DEPLOYMENT_PYTHON" tools/evaluate_walk_mujoco_standing.py \
+  --mod deployment/com.bxi.walk_robust --xml "$ELF3_MUJOCO_XML" \
+  --onnx output/policy.onnx --output output/standing.json
+
+PYTHONPATH="$ELF3_BXI_FRAMEWORK_DIR:${PYTHONPATH:-}" \
+  "$ELF3_DEPLOYMENT_PYTHON" tools/diagnose_walk_mujoco.py \
+  --mod deployment/com.bxi.walk_robust --xml "$ELF3_MUJOCO_XML" \
+  --onnx output/policy.onnx --output output/gait --include-mixed-yaw
+
+"$ELF3_IK_PYTHON" tools/evaluate_ik_policy.py \
+  --bank "$ELF3_IK_BANK" --onnx output/policy.onnx \
+  --xml "$ELF3_MUJOCO_XML" --output output/ik_workspace --full
 ```
 
-离线适配器要求显式给出 ONNX，不会隐式加载旧模型。高度由导出模型的 `height_command` 元数据恢复；第三方模型若没有该字段则沿用适配器默认值 0.8235 m，应先确认训练约定。
+前两个入口测固定手臂时的漂移、走停和步态；第三个测 IK 扰动，分开报告未见目标与困难姿态回归。
+单独验证速度追踪不能代表全工作空间手臂扰动已经稳定。`--smoke` 只运行一个 IK 场景，用于接线检查。
 
-本仓库提供仿真与导出链路；`deployment/` 未包含 ROS 插件注册或真机运行入口。
+完整检查点评估由训练环境启动：
 
-## 整理与验证范围
+```bash
+python tools/evaluate_dynamics_checkpoint.py \
+  --checkpoint /path/to/RUN/model_32000.pt --output output/checkpoint_eval \
+  --deployment_python "$ELF3_DEPLOYMENT_PYTHON" \
+  --ik-bank "$ELF3_IK_BANK" --ik-python "$ELF3_IK_PYTHON"
+```
 
-发布整理集中于独立目录、配置入口、环境变量、文档与资源排除，以及消除离线工具对旧 ONNX 的隐式依赖。未修改当前配方的 PPO 算法、奖励系数、对称性计算或课程推进规则。
+其中的 Isaac 评估含旧 AMASS 测试，不是完整 IK 分布的替代品。
+部署适配器依赖 BXI 框架的 `JointPolicy` 等接口；仓库没有包含 ROS 控制节点和预训练模型。
 
-`SOURCE_MANIFEST.json` 记录整理前输入文件的 SHA-256，用于追溯来源；它不是修改后文件的完整性清单。`tests/fixtures/ppo_before_auxiliary.py` 为不带辅助头时的历史 PPO 回归基线，因此测试无需训练日志归档。
+## 提取边界
 
-CPU 测试覆盖可独立运行的数值与配置逻辑。它们不能证明新机器的完整 Isaac 环境可用，也不能替代重训与真机验证。
+保留 ELF3 Tang 任务族和其公共框架依赖，避免裁掉导入链。旧 AMASS、课程门槛和消融工具仍在源码中，
+但默认 `scripts/train_current.py` 不启用门槛课程。
+提取时只增加便携路径、资源准备/预检、启动配方、测试样本与文档；核心训练、奖励、IK v3 执行逻辑沿用来源项目。
+`SOURCE_MANIFEST.json` 记录提取时输入文件哈希，便于核对来源；不是训练性能报告。

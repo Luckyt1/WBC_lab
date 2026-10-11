@@ -21,7 +21,7 @@ def main():
     parser.add_argument('--output', required=True)
     parser.add_argument('--max_iterations', type=int, default=50000)
     parser.add_argument('--num_envs', type=int, default=4096)
-    parser.add_argument('--evaluation_interval', type=int, default=2000)
+    parser.add_argument('--evaluation_interval', type=int, default=5000)
     parser.add_argument('--task', choices=('walk_elf3_tang_bxi_robust', 'walk_elf3_tang_bxi_still'), default='walk_elf3_tang_bxi_robust')
     parser.add_argument('--resume_checkpoint', type=Path)
     parser.add_argument('--deployment_python', type=Path)
@@ -34,6 +34,8 @@ def main():
     parser.add_argument('--pelvis_height', type=float, default=None)
     parser.add_argument('--elf3_symmetry', action='store_true')
     parser.add_argument('--liftoff_rewards', action='store_true')
+    parser.add_argument('--ik_arm_bank', type=Path)
+    parser.add_argument('--ik_python', type=Path, help='Isolated Pinocchio + MuJoCo evaluation interpreter.')
     parser.add_argument('--disable_symmetry_on_resume', action='store_true')
     parser.add_argument('--teleop_curriculum_stage', default=None)
     parser.add_argument('--teleop_curriculum_decision', type=Path)
@@ -43,6 +45,8 @@ def main():
                         help='Read-only fresh-run audit reference; never loaded into the policy.')
     parser.add_argument('--save_interval', type=int, default=500)
     args = parser.parse_args()
+    if args.ik_arm_bank and (args.teleop_curriculum_stage or not args.ik_python):
+        parser.error('IK bank requires no gated curriculum and --ik_python')
     if not 0. <= args.teleop_standing_fraction <= 1.:
         parser.error('--teleop_standing_fraction must be between 0 and 1')
     if args.teleop_standing_fraction != .8 and not args.teleop_standing:
@@ -97,6 +101,27 @@ def main():
     with (out/'launch.lock').open('x') as f:
         f.write(str(os.getpid()))
     archive_sources(out)
+    if args.ik_arm_bank:
+        # Include generated inputs and the upstream YAML needed by the numerical
+        # source loader; source hashes alone cannot reconstruct a trajectory bank.
+        import hashlib
+        import zipfile
+        bank = args.ik_arm_bank.resolve(strict=True)
+        files = [bank/name for name in ('manifest.json','train.npz','test.npz')]
+        from elf3_ik_core import SOURCE, PROVENANCE
+        files.extend(SOURCE/name for name in read(PROVENANCE)['sha256'])
+        if read(bank/'manifest.json')['version']>=3:
+            files.extend(p for p in (ROOT/'third_party/ruckig').rglob('*') if p.is_file())
+            files.extend((ROOT/'tools/native').glob('*.cpp'))
+            files.extend((ROOT/'legged_lab/envs/elf3_tang/wbc').glob('_arm_ruckig*.so'))
+        with zipfile.ZipFile(out/'source.zip','a',zipfile.ZIP_DEFLATED) as archive:
+            for path in files:
+                try:
+                    relative = str(path.relative_to(ROOT))
+                except ValueError:
+                    relative = ('ik_bank/' if path.parent == bank else 'ik_upstream/')+path.name
+                archive.write(path,relative)
+        write(out/'ik_input_sha256.json',{str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in files})
     suffix = f'from{start_iteration}' if checkpoint_source else 'fresh'
     name = f'{out.name}_{args.num_envs}_{suffix}'
     if args.teleop_curriculum_stage is not None:
@@ -136,6 +161,23 @@ def main():
                              f'{25*moving:g}% lateral, {50*moving:g}% forward/back; fixed height .8235m and waist yaw 0')
         state['disturbances'] += '; 70% AMASS / 30% neutral arm references (independent of command mode)'
     lock = threading.RLock()
+    if args.ik_arm_bank:
+        bank = args.ik_arm_bank.resolve(strict=True)
+        manifest = read(bank/'manifest.json')
+        state['ik_arm_bank'] = str(bank)
+        state['ik_counts'] = manifest['counts']
+        state['ik_bank_sha256'] = manifest['bank_sha256']
+        state['ik_execution_version'] = manifest['version']
+        state['ik_python'] = str(args.ik_python)
+        state['disturbances'] = ('push 0->full over 20k updates; reset velocity 0->full over 30k; noise on; '
+            'procedural IK full range from start; 85% reach/hold/return, 15% neutral; 30% active targets from prior drift/instability cases; no gated arm curriculum')
+        state['evaluation_scope'] += '; frozen unseen IK targets with online original IK, live shared guard/rate limiter and gravity in MuJoCo'
+        if manifest['version']>=2:
+            state['evaluation_scope'] = ('Frozen AMASS retention and auxiliary probes; unchanged IK goal pool including rejected goals; '
+                'validated branch guides, live waist correction, arrival gating, shared OBB/rate guard and gravity in MuJoCo')
+            state['disturbances'] += f"; one complete arrival-gated arm attempt per {manifest['recipe']['max_episode_s']}s episode, neutral after return; OBB margin 3mm"
+        if manifest['version']>=3:
+            state['evaluation_scope'] += '; local Ruckig v/a/j limits, predicted moving obstacles, bounded RRT-Connect; planning failures explicitly fail without blind IK fallback'
     if args.pelvis_height is not None:
         state['pelvis_height'] = args.pelvis_height
         state['commands'] = state['commands'].replace('.8235m', f'{args.pelvis_height}m')
@@ -176,6 +218,8 @@ def main():
         argv += ['--elf3_symmetry']
     if args.liftoff_rewards:
         argv += ['--liftoff_rewards']
+    if args.ik_arm_bank:
+        argv += ['--ik_arm_bank', str(args.ik_arm_bank.resolve())]
     if args.disable_symmetry_on_resume:
         argv += ['--disable_symmetry_on_resume']
     if args.teleop_curriculum_stage is not None:
@@ -305,6 +349,10 @@ def main():
                         command=[sys.executable,'-u','tools/evaluate_dynamics_checkpoint.py',
                                  '--checkpoint',str(candidate),'--output',str(dest),
                                  '--deployment_python',str(args.deployment_python)]
+                        if args.ik_arm_bank:
+                            command += ['--ik-bank', str(args.ik_arm_bank.resolve()), '--ik-python', str(args.ik_python)]
+                            if code == 0:
+                                command.append('--ik-full')
                     eval_stream = (dest/'console.log').open('w')
                     evaluator = subprocess.Popen(command, cwd=ROOT, env=environment,
                                                  stdout=eval_stream, stderr=subprocess.STDOUT, start_new_session=auxiliary)

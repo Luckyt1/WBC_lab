@@ -1,0 +1,1070 @@
+{
+  "version": 3,
+  "seed": 202610071,
+  "test_seed": 202610072,
+  "targets": [
+    {
+      "id": "regression_000_neutral",
+      "label": "neutral",
+      "group": "named",
+      "known_feasible_joint_positions": [
+        0.0,
+        0.0,
+        0.0,
+        -0.30000001192092896,
+        0.0,
+        0.0,
+        0.6000000238418579,
+        -0.30000001192092896,
+        0.0,
+        -0.30000001192092896,
+        0.0,
+        0.0,
+        0.6000000238418579,
+        -0.30000001192092896,
+        0.0,
+        0.20000000298023224,
+        0.20000000298023224,
+        0.0,
+        0.6000000238418579,
+        0.0,
+        0.0,
+        0.0,
+        0.20000000298023224,
+        -0.20000000298023224,
+        0.0,
+        0.6000000238418579,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "positions": [
+        [
+          0.12908379922398147,
+          0.2575766992901868,
+          -0.11321506015137303
+        ],
+        [
+          0.12908379922398147,
+          -0.2575766992901868,
+          -0.11321506015137303
+        ]
+      ],
+      "orientations_wxyz": [
+        [
+          0.916459520174553,
+          0.09784339625348966,
+          0.38747288486552006,
+          0.019833839391357428
+        ],
+        [
+          0.916459520174553,
+          -0.09784339625348966,
+          0.38747288486552006,
+          -0.019833839391357428
+        ]
+      ],
+      "split": "train",
+      "hard": false,
+      "origin": "previous_32k_workspace_test",
+      "witness_arm_q": [
+        0.20000000298023224,
+        0.20000000298023224,
+        0.0,
+        0.6000000238418579,
+        0.0,
+        0.0,
+        0.0,
+        0.20000000298023224,
+        -0.20000000298023224,
+        0.0,
+        0.6000000238418579,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "pose_key": "9a9999999999c93f9a9999999999c93f0000000000000000333333333333e33f0000000000000000000000000000000000000000000000009a9999999999c93f9a9999999999c9bf0000000000000000333333333333e33f000000000000000000000000000000000000000000000000",
+      "nominal_endpoint_error": [
+        [
+          0.0,
+          4.5064983501730905e-17
+        ],
+        [
+          7.37738868007086e-09,
+          2.693461694926395e-08
+        ]
+      ],
+      "ik_reasons": {
+        "ok": 300
+      },
+      "execution_validation": {
+        "method": "original_cartesian_ik",
+        "outbound": {
+          "endpoint_error": [
+            0.0,
+            3.1034707204833584e-17
+          ],
+          "minimum_nominal_clearance_m": 0.006009161472320557,
+          "physical_self_penetration_over_point1mm": false
+        },
+        "inbound": {
+          "endpoint_error": [
+            7.37738868007086e-09,
+            2.6934616964416228e-08
+          ],
+          "minimum_nominal_clearance_m": 0.006009161472320557,
+          "physical_self_penetration_over_point1mm": false
+        }
+      }
+    },
+    {
+      "id": "regression_001_both_forward_bent",
+      "label": "both_forward_bent",
+      "group": "named",
+      "known_feasible_joint_positions": [
+        0.0,
+        0.0,
+        0.0,
+        -0.30000001192092896,
+        0.0,
+        0.0,
+        0.6000000238418579,
+        -0.30000001192092896,
+        0.0,
+        -0.30000001192092896,
+        0.0,
+        0.0,
+        0.6000000238418579,
+        -0.30000001192092896,
+        0.0,
+        -1.05,
+        0.2,
+        0.0,
+        0.6,
+        0.0,
+        0.0,
+        0.0,
+        -1.05,
+        -0.2,
+        -0.0,
+        0.6,
+        -0.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0
+      ],
+      "positions": [
+        [
+          0.44564903512323145,
+          0.2575766971194678,
+          0.3014457458910382
+        ],
+        [
+          0.44564903512323145,
+          -0.2575766971194678,
+          0.3014457458910382
+        ]
+      ],
+      "orientations_wxyz": [
+        [
+          0.9699241968220724,
+          0.06774266026773225,
+          -0.22199175962111437,
+          0.07333241479202628
+        ],
+        [
+          0.9699241968220724,
+          -0.06774266026773225,
+          -0.22199175962111437,
+          -0.07333241479202628
+        ]
+      ],
+      "split": "train",
+      "hard": false,
+      "origin": "previous_32k_workspace_test",
+      "witness_arm_q": [
+        -1.05,
+        0.2,
+        0.0,
+        0.6,
+        0.0,
+        0.0,
+        0.0,
+        -1.05,
+        -0.2,
+        -0.0,
+        0.6,
+        -0.0,
+        0.0,
+        -0.0
+      ],
+      "pose_key": "cdccccccccccf0bf9a9999999999c93f0000000000000000333333333333e33f000000000000000000000000000000000000000000000000cdccccccccccf0bf9a9999999999c9bf0000000000000080333333333333e33f000000000000008000000000000000000000000000000080",
+      "nominal_endpoint_error": [
+        [
+          3.449321118548219e-05,
+          2.786316889242371e-05
+        ],
+        [
+          2.4907869539363243e-05,
+          2.7164623783495993e-05
+        ]
+      ],
+      "ik_reasons": {
+        "ok": 300
+      },
+      "execution_validation": {
+        "method": "original_cartesian_ik",
+        "outbound": {
+          "endpoint_error": [
+            3.449321118550223e-05,
+            2.7863168892050614e-05
+          ],
+          "minimum_nominal_clearance_m": 0.00599302351474762,
+          "physical_self_penetration_over_point1mm": false
+        },
+        "inbound": {
+          "endpoint_error": [
+            2.4907869539363243e-05,
+            2.716462378346021e-05
+          ],
+          "minimum_nominal_clearance_m": 0.00599302351474762,
+          "physical_self_penetration_over_point1mm": false
+        }
+      }
+    },
+    {
+      "id": "regression_002_both_forward_long",
+      "label": "both_forward_long",
+      "group": "named",
+      "known_feasible_joint_positions": [
+        0.0,
+        0.0,
+        0.0,
+        -0.30000001192092896,
+        0.0,
+        0.0,
+        0.6000000238418579,
+        -0.30000001192092896,
+        0.0,
+        -0.30000001192092896,
+        0.0,
+        0.0,
+        0.6000000238418579,
+        -0.30000001192092896,
+        0.0,
+        -1.5,
+        0.2,
+        0.0,
+        1.5,
+        0.0,
+        0.0,
+        0.0,
+        -1.5,
+        -0.2,
+        -0.0,
+        1.5,
+        -0.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0
+      ],
+      "positions": [
+        [
+          0.501191121323797,
+          0.27959129401731003,
+          0.29611230980693015
+        ],
+        [
+          0.501191121323797,
+          -0.27959129401731003,
+          0.29611230980693015
+        ]
+      ],
+      "orientations_wxyz": [
+        [
+          0.9950041652780257,
+          0.007061936526522492,
+          0.0,
+          0.09958333260076484
+        ],
+        [
+          0.9950041652780257,
+          -0.007061936526522492,
+          0.0,
+          -0.09958333260076484
+        ]
+      ],
+      "split": "train",
+      "hard": false,
+      "origin": "previous_32k_workspace_test",
+      "witness_arm_q": [
+        -1.5,
+        0.2,
+        0.0,
+        1.5,
+        0.0,
+        0.0,
+        0.0,
+        -1.5,
+        -0.2,
+        -0.0,
+        1.5,
+        -0.0,
+        0.0,
+        -0.0
+      ],
+      "pose_key": "000000000000f8bf9a9999999999c93f0000000000000000000000000000f83f000000000000000000000000000000000000000000000000000000000000f8bf9a9999999999c9bf0000000000000080000000000000f83f000000000000008000000000000000000000000000000080",
+      "nominal_endpoint_error": [
+        [
+          0.0004152670245346599,
+          1.1414816779449371e-07
+        ],
+        [
+          5.467050555965167e-05,
+          6.18278248364681e-05
+        ]
+      ],
+      "ik_reasons": {
+        "ok": 300
+      },
+      "execution_validation": {
+        "method": "planned_branch_upstream_ik_waypoints",
+        "outbound": {
+          "endpoint_error": [
+            1.5239677183984084e-09,
+            2.9802322209381036e-09
+          ],
+          "minimum_nominal_clearance_m": 0.006009116768836975,
+          "physical_self_penetration_over_point1mm": false
+        },
+        "inbound": {
+          "endpoint_error": [
+            7.37738868007086e-09,
+            2.6934616964416228e-08
+          ],
+          "minimum_nominal_clearance_m": 0.006009116768836975,
+          "physical_self_penetration_over_point1mm": false
+        }
+      }
+    },
+    {
+      "id": "regression_004_both_overhead",
+      "label": "both_overhead",
+      "group": "named",
+      "known_feasible_joint_positions": [
+        0.0,
+        0.0,
+        0.0,
+        -0.30000001192092896,
+        0.0,
+        0.0,
+        0.6000000238418579,
+        -0.30000001192092896,
+        0.0,
+        -0.30000001192092896,
+        0.0,
+        0.0,
+        0.6000000238418579,
+        -0.30000001192092896,
+        0.0,
+        -2.75,
+        0.2,
+        0.0,
+        1.5,
+        0.0,
+        0.0,
+        0.0,
+        -2.75,
+        -0.2,
+        -0.0,
+        1.5,
+        -0.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0
+      ],
+      "positions": [
+        [
+          0.17453741894669658,
+          0.27959129401731003,
+          0.7836399379455871
+        ],
+        [
+          0.17453741894669658,
+          -0.27959129401731003,
+          0.7836399379455871
+        ]
+      ],
+      "orientations_wxyz": [
+        [
+          0.8069116817945532,
+          -0.052538966259734005,
+          -0.5821742236685737,
+          0.08489032985998887
+        ],
+        [
+          0.8069116817945532,
+          0.052538966259734005,
+          -0.5821742236685737,
+          -0.08489032985998887
+        ]
+      ],
+      "split": "train",
+      "hard": true,
+      "origin": "previous_32k_workspace_test",
+      "witness_arm_q": [
+        -2.75,
+        0.2,
+        0.0,
+        1.5,
+        0.0,
+        0.0,
+        0.0,
+        -2.75,
+        -0.2,
+        -0.0,
+        1.5,
+        -0.0,
+        0.0,
+        -0.0
+      ],
+      "pose_key": "00000000000006c09a9999999999c93f0000000000000000000000000000f83f00000000000000000000000000000000000000000000000000000000000006c09a9999999999c9bf0000000000000080000000000000f83f000000000000008000000000000000000000000000000080",
+      "nominal_endpoint_error": [
+        [
+          0.0004799999999453112,
+          1.1587791951084652e-07
+        ],
+        [
+          3.4633340399680386e-05,
+          3.8129888037162665e-05
+        ]
+      ],
+      "ik_reasons": {
+        "ok": 300
+      },
+      "execution_validation": {
+        "method": "planned_branch_upstream_ik_waypoints",
+        "outbound": {
+          "endpoint_error": [
+            1.5239676826592772e-09,
+            2.9802322089357237e-09
+          ],
+          "minimum_nominal_clearance_m": 0.006009116768836975,
+          "physical_self_penetration_over_point1mm": false
+        },
+        "inbound": {
+          "endpoint_error": [
+            7.37738868007086e-09,
+            2.6934616964416228e-08
+          ],
+          "minimum_nominal_clearance_m": 0.006009116768836975,
+          "physical_self_penetration_over_point1mm": false
+        }
+      }
+    },
+    {
+      "id": "regression_009_both_wrist_turned",
+      "label": "both_wrist_turned",
+      "group": "named",
+      "known_feasible_joint_positions": [
+        0.0,
+        0.0,
+        0.0,
+        -0.30000001192092896,
+        0.0,
+        0.0,
+        0.6000000238418579,
+        -0.30000001192092896,
+        0.0,
+        -0.30000001192092896,
+        0.0,
+        0.0,
+        0.6000000238418579,
+        -0.30000001192092896,
+        0.0,
+        -1.4,
+        0.4,
+        0.2,
+        1.1,
+        1.3,
+        0.6,
+        0.5,
+        -1.4,
+        -0.4,
+        -0.2,
+        1.1,
+        -1.3,
+        0.6,
+        -0.5,
+        0.0,
+        0.0
+      ],
+      "positions": [
+        [
+          0.44993267969717077,
+          0.38778504553771065,
+          0.3513833671581117
+        ],
+        [
+          0.44993267969717077,
+          -0.38778504553771065,
+          0.3513833671581117
+        ]
+      ],
+      "orientations_wxyz": [
+        [
+          0.6197590790220499,
+          0.4949813129312699,
+          0.11321191277963537,
+          0.5983938891928571
+        ],
+        [
+          0.6197590790220499,
+          -0.4949813129312699,
+          0.11321191277963537,
+          -0.5983938891928571
+        ]
+      ],
+      "split": "train",
+      "hard": true,
+      "origin": "previous_32k_workspace_test",
+      "witness_arm_q": [
+        -1.4,
+        0.4,
+        0.2,
+        1.1,
+        1.3,
+        0.6,
+        0.5,
+        -1.4,
+        -0.4,
+        -0.2,
+        1.1,
+        -1.3,
+        0.6,
+        -0.5
+      ],
+      "pose_key": "666666666666f6bf9a9999999999d93f9a9999999999c93f9a9999999999f13fcdccccccccccf43f333333333333e33f000000000000e03f666666666666f6bf9a9999999999d9bf9a9999999999c9bf9a9999999999f13fcdccccccccccf4bf333333333333e33f000000000000e0bf",
+      "nominal_endpoint_error": [
+        [
+          9.497458137825384e-05,
+          1.263727043631301e-05
+        ],
+        [
+          2.273734070968634e-05,
+          3.0912646197270475e-05
+        ]
+      ],
+      "ik_reasons": {
+        "ok": 300
+      },
+      "execution_validation": {
+        "method": "original_cartesian_ik",
+        "outbound": {
+          "endpoint_error": [
+            9.497458137825384e-05,
+            1.2637270436000846e-05
+          ],
+          "minimum_nominal_clearance_m": 0.006009161472320557,
+          "physical_self_penetration_over_point1mm": false
+        },
+        "inbound": {
+          "endpoint_error": [
+            2.273734070968634e-05,
+            3.091264619729149e-05
+          ],
+          "minimum_nominal_clearance_m": 0.005751296877861023,
+          "physical_self_penetration_over_point1mm": false
+        }
+      }
+    },
+    {
+      "id": "test_0001_side",
+      "split": "test",
+      "group": "side",
+      "hard": false,
+      "origin": "procedural_fk_witness",
+      "witness_arm_q": [
+        -0.0026114170497347766,
+        1.0676233365717485,
+        0.5437877365233986,
+        1.5258471885650955,
+        0.5186272003534149,
+        -0.02596178170867025,
+        0.6945937000281881,
+        -0.0026114170497347766,
+        -1.0676233365717485,
+        -0.5437877365233986,
+        1.5258471885650955,
+        -0.5186272003534149,
+        -0.02596178170867025,
+        -0.6945937000281881
+      ],
+      "pose_key": "94f6065f984c65bf865ad3bce314f13fd712f241cf66e13fefc9c342ad69f83f4694f6065f98e03f39b4c876be9f9abfb5a679c7293ae63f94f6065f984c65bf865ad3bce314f1bfd712f241cf66e1bfefc9c342ad69f83f4694f6065f98e0bf39b4c876be9f9abfb5a679c7293ae6bf",
+      "positions": [
+        [
+          0.010474599192633008,
+          0.6291844811064955,
+          0.07197472492902715
+        ],
+        [
+          0.010474599192633008,
+          -0.6291844811064955,
+          0.07197472492902715
+        ]
+      ],
+      "orientations_wxyz": [
+        [
+          0.4679857696532613,
+          0.5452064302399648,
+          0.4186119665025866,
+          0.5554307241482741
+        ],
+        [
+          -0.4679857696532613,
+          0.5452064302399648,
+          -0.4186119665025866,
+          0.5554307241482741
+        ]
+      ],
+      "nominal_endpoint_error": [
+        [
+          0.00037534291276379887,
+          4.471554814772797e-06
+        ],
+        [
+          2.2285741725697705e-05,
+          3.738611493235576e-05
+        ]
+      ],
+      "ik_reasons": {
+        "ok": 300
+      },
+      "execution_validation": {
+        "method": "original_cartesian_ik",
+        "outbound": {
+          "endpoint_error": [
+            0.0003753427503704922,
+            4.434333818816665e-06
+          ],
+          "minimum_nominal_clearance_m": 0.006009161472320557,
+          "physical_self_penetration_over_point1mm": false
+        },
+        "inbound": {
+          "endpoint_error": [
+            2.2285741725697705e-05,
+            3.738611493234754e-05
+          ],
+          "minimum_nominal_clearance_m": 0.006033912301063538,
+          "physical_self_penetration_over_point1mm": false
+        }
+      }
+    },
+    {
+      "id": "test_0002_overhead",
+      "split": "test",
+      "group": "overhead",
+      "hard": false,
+      "origin": "procedural_fk_witness",
+      "witness_arm_q": [
+        -2.157853951209306,
+        0.9559454295350952,
+        -0.42162872925233186,
+        0.8024062711057445,
+        -0.2829875197184206,
+        0.020107909348695885,
+        0.3369238655867879,
+        -2.157853951209306,
+        -0.9559454295350952,
+        0.42162872925233186,
+        0.8024062711057445,
+        0.2829875197184206,
+        0.020107909348695885,
+        -0.3369238655867879
+      ],
+      "pose_key": "a54e4013614301c082e2c798bb96ee3f2497ff907efbdabfcceec9c342ade93fe9263108ac1cd2bfbe30992a1895943f006f8104c58fd53fa54e4013614301c082e2c798bb96eebf2497ff907efbda3fcceec9c342ade93fe9263108ac1cd23fbe30992a1895943f006f8104c58fd5bf",
+      "positions": [
+        [
+          0.17094836725475793,
+          0.49547676099416893,
+          0.6222100982086947
+        ],
+        [
+          0.17094836725475793,
+          -0.49547676099416893,
+          0.6222100982086947
+        ]
+      ],
+      "orientations_wxyz": [
+        [
+          0.6949471818363672,
+          0.027511723607028346,
+          -0.5299855028574382,
+          0.485187475397717
+        ],
+        [
+          0.6949471818363672,
+          -0.027511723607028346,
+          -0.5299855028574382,
+          -0.485187475397717
+        ]
+      ],
+      "nominal_endpoint_error": [
+        [
+          7.796581434801447e-05,
+          4.304167780291876e-05
+        ],
+        [
+          3.067848998602266e-05,
+          4.086004695606267e-05
+        ]
+      ],
+      "ik_reasons": {
+        "ok": 300
+      },
+      "execution_validation": {
+        "method": "planned_branch_upstream_ik_waypoints",
+        "outbound": {
+          "endpoint_error": [
+            3.696241998623133e-08,
+            1.204471279830635e-07
+          ],
+          "minimum_nominal_clearance_m": 0.006009161472320557,
+          "physical_self_penetration_over_point1mm": false
+        },
+        "inbound": {
+          "endpoint_error": [
+            7.37738868007086e-09,
+            2.6934616964416228e-08
+          ],
+          "minimum_nominal_clearance_m": 0.006009161472320557,
+          "physical_self_penetration_over_point1mm": false
+        }
+      }
+    }
+  ],
+  "arm_joint_names": [
+    "l_shoulder_y_joint",
+    "l_shoulder_x_joint",
+    "l_shoulder_z_joint",
+    "l_elbow_y_joint",
+    "l_wrist_x_joint",
+    "l_wrist_y_joint",
+    "l_wrist_z_joint",
+    "r_shoulder_y_joint",
+    "r_shoulder_x_joint",
+    "r_shoulder_z_joint",
+    "r_elbow_y_joint",
+    "r_wrist_x_joint",
+    "r_wrist_y_joint",
+    "r_wrist_z_joint"
+  ],
+  "default_arm_q": [
+    0.2,
+    0.2,
+    0.0,
+    0.6,
+    0.0,
+    0.0,
+    0.0,
+    0.2,
+    -0.2,
+    0.0,
+    0.6,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "joint_limits": [
+    [
+      -2.8798,
+      2.8798
+    ],
+    [
+      -0.34907,
+      3.0543
+    ],
+    [
+      -2.8798,
+      2.8798
+    ],
+    [
+      -0.95993,
+      1.6581
+    ],
+    [
+      -2.8798,
+      2.8798
+    ],
+    [
+      -1.309,
+      1.309
+    ],
+    [
+      -0.7854,
+      0.7854
+    ],
+    [
+      -2.8798,
+      2.8798
+    ],
+    [
+      -3.0543,
+      0.34907
+    ],
+    [
+      -2.8798,
+      2.8798
+    ],
+    [
+      -0.95993,
+      1.6581
+    ],
+    [
+      -2.8798,
+      2.8798
+    ],
+    [
+      -1.309,
+      1.309
+    ],
+    [
+      -0.7854,
+      0.7854
+    ]
+  ],
+  "source": {
+    "repository": "https://github.com/konodoki/com.bxi.upper_body_teleop",
+    "commit": "47087655a6c30f79175f3909ef5eb8131da74877",
+    "sha256": {
+      "arm_bridge.py": "dab9846c0bb0aa1a0bcd311466cf36e8313003019a7c60dc9d86cc64a71a9afa",
+      "gravity.py": "adaaae4f736533b82ef46bfa1285e9c359d904d71a08f3bbeaec77a92537a2ca",
+      "mod.yaml": "5f1191892d85c2d78b91975c88f96072dc2e12f443461bd3b87a8b734a8409db",
+      "elf3-dof31.urdf": "c0b98c7cd07183e441e66b40932bef9c500c2d59d9f6a2af370022df09270607"
+    },
+    "usage": "Unmodified upstream files. Only numerical IK classes are imported, without ROS or hardware transport."
+  },
+  "solver_parameters": {
+    "pico_host": "127.0.0.1",
+    "pico_port": 5556,
+    "pico_topic": "pose",
+    "robot_state_topic": "pico_control_joint_states",
+    "reference_topic": "pico_control_joint_commands",
+    "rate_hz": 50.0,
+    "stale_timeout_s": 0.5,
+    "required_consecutive_frames": 3,
+    "ik_iterations": 24,
+    "ik_damping": 0.001,
+    "ik_step_size": 0.7,
+    "ik_tolerance": 0.0001,
+    "maximum_position_error_m": 0.003,
+    "maximum_orientation_error_rad": 0.03,
+    "maximum_joint_step_rad": 0.12,
+    "joint_limit_margin_rad": 0.0,
+    "joint_centering_gain": 0.005,
+    "swivel_continuity_gain": 0.02,
+    "swivel_min_radius_m": 0.02
+  },
+  "generation": {
+    "dt": 0.02,
+    "frames_per_leg": 151,
+    "nominal_leg_seconds": 3.0,
+    "nominal_feedback": "planned joint guide selects IK seed; previous rate-limited command sets velocity limit; live waist correction and physical feedback guard during execution",
+    "collision_endpoint_filter": "MuJoCo robot self penetration >1mm rejected; live path guard runs during training",
+    "xml_sha256": "eda267d24465a847e3fff8b2a8e379324845e563643ec610b38d701fed64d28e",
+    "validation": "Both legs: FK endpoint <=5mm/0.03rad after limiter, OBB >=3mm at control points/midpoints, MuJoCo self-penetration <=0.1mm; up to 96 alternate original-IK seeds with 96 iterations, and collision-checked joint guides seeding original IK at Cartesian waypoints.",
+    "v3": "Reuse validated v2 paths; rejected goals get bounded seeded bidirectional RRT-Connect, alternate upstream IK seeds, dense OBB edge checks, upstream waypoint IK and final MuJoCo validation. Keep rejected goals and split unchanged.",
+    "arrival_validation": "Preserve v2 actual wrist 2 cm / 0.1 rad for 0.1 s; no joint-speed gate. Path timing retains slower planned motion while combined trajectory limits allow body compensation.",
+    "timing": "Intentional paths retain cached minimum durations based on 2 rad/s, 4 rad/s^2, 20 rad/s^3; combined reference remains bounded at 6 rad/s, 80 rad/s^2, 1000 rad/s^3 to track rapid waist compensation under PPO exploration."
+  },
+  "recipe": {
+    "neutral_fraction": 0.15,
+    "hard_fraction_of_active": 0.3,
+    "max_velocity": 6.0,
+    "guard_margin": 0.003,
+    "prepare_s": [
+      0.6,
+      1.2
+    ],
+    "reach_s": [
+      0.5,
+      6.0
+    ],
+    "hold_s": [
+      2.0,
+      8.0
+    ],
+    "return_s": [
+      0.5,
+      4.0
+    ],
+    "rest_s": [
+      0.5,
+      1.5
+    ],
+    "gravity_feedforward": true,
+    "gravity_effort_limit_fraction": 0.8,
+    "guard_geometry": "obb_v2",
+    "arrival_gate": true,
+    "arrival_position_m": 0.02,
+    "arrival_orientation_rad": 0.1,
+    "arrival_dwell_s": 0.1,
+    "arrival_timeout_s": 5.0,
+    "max_episode_s": 40.0,
+    "waist_pose_correction": true,
+    "max_acceleration": 80.0,
+    "max_jerk": 1000.0,
+    "executor": "predictive_ruckig_v3",
+    "prediction_times_s": [
+      0.02,
+      0.08,
+      0.2
+    ],
+    "dynamic_extra_margin_m": 0.005,
+    "timing": "total_variation_minimum_duration",
+    "planning_failure": "hold_neutral_and_report_failure",
+    "unsafe_recovery": "bounded_outward_improving_clearance",
+    "planned_max_acceleration": 4.0,
+    "planned_max_jerk": 20.0,
+    "planned_max_velocity": 2.0
+  },
+  "split_policy": "Independent seeded FK targets; exact and mirrored duplicates excluded. All prior observed failures are training/regression only.",
+  "limitations": "Sampled finite-horizon collision prediction, finite planning budget, reference derivative limits only; no continuous-time or hardware safety guarantee. A rejected target is an explicit evaluation failure.",
+  "counts": {
+    "train": 5,
+    "test": 2,
+    "hard": 2,
+    "rejected": 1
+  },
+  "bank_sha256": {
+    "train": "54c2dc862fc7ce2548ac5e089b2b8a4d344389fc8b5ac622a97a13cf2908abe7",
+    "test": "69c88c3b38f725a6766b784bf9a8418117163efaa368bbbd1c65330aba5f20d9"
+  },
+  "rejected_targets": [
+    {
+      "id": "regression_012_left_workspace_02",
+      "label": "left_workspace_02",
+      "group": "single_arm",
+      "known_feasible_joint_positions": [
+        0.0,
+        0.0,
+        0.0,
+        -0.30000001192092896,
+        0.0,
+        0.0,
+        0.6000000238418579,
+        -0.30000001192092896,
+        0.0,
+        -0.30000001192092896,
+        0.0,
+        0.0,
+        0.6000000238418579,
+        -0.30000001192092896,
+        0.0,
+        -0.6613919171437477,
+        -0.2955347064832447,
+        -1.6030543929705492,
+        0.37396927499884347,
+        0.8666201460063392,
+        -0.5510442770092326,
+        0.7636816119125166,
+        0.20000000298023224,
+        -0.20000000298023224,
+        0.0,
+        0.6000000238418579,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "positions": [
+        [
+          0.1566996323275867,
+          -0.15165470950968513,
+          0.09966049393102736
+        ],
+        [
+          0.12908379922398147,
+          -0.2575766992901868,
+          -0.11321506015137303
+        ]
+      ],
+      "orientations_wxyz": [
+        [
+          0.5630735708948369,
+          0.11413921112725739,
+          -0.6728212126818854,
+          -0.46608154866746415
+        ],
+        [
+          0.916459520174553,
+          -0.09784339625348966,
+          0.38747288486552006,
+          -0.019833839391357428
+        ]
+      ],
+      "split": "train",
+      "hard": false,
+      "origin": "previous_32k_workspace_test",
+      "witness_arm_q": [
+        -0.6613919171437477,
+        -0.2955347064832447,
+        -1.6030543929705492,
+        0.37396927499884347,
+        0.8666201460063392,
+        -0.5510442770092326,
+        0.7636816119125166,
+        0.20000000298023224,
+        -0.20000000298023224,
+        0.0,
+        0.6000000238418579,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "pose_key": "7c613255302ae5bfb6f3fdd478e9d2bf4a7b832f4ca6f9bf560e2db29defd73fd0d556ec2fbbeb3f6f1283c0caa1e1bf00917efb3a70e83f9a9999999999c93f9a9999999999c9bf0000000000000000333333333333e33f000000000000000000000000000000000000000000000000",
+      "nominal_endpoint_error": [
+        [
+          5.185215354141186e-05,
+          5.4445715396070154e-05
+        ],
+        [
+          1.7425075212954724e-05,
+          4.94021120583876e-05
+        ]
+      ],
+      "ik_reasons": {
+        "ok": 300
+      },
+      "execution_validation": {
+        "method": "rejected",
+        "reason": "no_collision_clear_endpoint_within_ik_budget",
+        "endpoint_branches": 0,
+        "search_budget_s": 120.0,
+        "seed": 3228063199
+      }
+    }
+  ],
+  "parent_bank": "../v2",
+  "parent_manifest_sha256": "fd3fe0b516674ee6957ea335c8e9834b42babaff3ae96323060eab34624537e3",
+  "nominal_torso_in_pelvis": {
+    "position": [
+      0.0,
+      0.0,
+      0.2265
+    ],
+    "orientation_wxyz": [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "fixture_notice": "Small sample from local procedural IK banks for CPU regression tests only. Not a training bank or benchmark result."
+}
