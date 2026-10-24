@@ -1,20 +1,38 @@
 {
-  "source_project": "ELF3 Lab IK disturbance training",
-  "snapshot_date": "2026-10-11",
-  "description": "Input source SHA-256 before portable packaging changes. Verified against the stopped IK v3 continuation run on 2026-10-11; all archived training source files still match. This export includes source and provenance, not checkpoints or runtime logs.",
+  "snapshot_date": "2026-10-25T01:21:58.201175+08:00",
+  "source_project": "/home/cheng/elf3_lab/workspace/no_waist_pose_ankle_limits_20261023/runtime",
+  "source_archive": "/home/cheng/elf3_lab/workspace/no_waist_pose_ankle_limits_20261023/training/source.zip",
+  "source_archive_sha256": "ad7d0fc16405e7609a1a36625c226cda3c3041b9f06d3c6e5b6ec7479ebd78bd",
+  "archived_files_verified": 261,
   "files": {
+    "data/ik_reach_hold_return_predictive_v3_servo_20261008/manifest.json": "02945ff79feb83869e92615b9cae88385c987c24d53c38baf104a72fe12469a4",
+    "data/ik_reach_hold_return_predictive_v3_servo_20261008/test.npz": "e99a8b3fa091fcba6dd65a43b59b83503921b718fffc26509f5ebe4e7a670530",
+    "data/ik_reach_hold_return_predictive_v3_servo_20261008/train.npz": "0373cd213267ff11c43d2b4a50b33ed87cf8ae46b91439882067a442499228d8",
     "legged_lab/__init__.py": "2d616bb1b3c6289455bdf016ced295557c725d81cad92b6e86b2252a4bac7dcf",
     "legged_lab/assets/__init__.py": "14f7f013a8c46ac78d3531840616493d5c4c2b5ffb20068ed6e968c7be6d2417",
-    "legged_lab/assets/elf3_bxi_31/__init__.py": "1f320cc4c1bbf577b1213a4bf48863ee98d1b487182ed233317fea348958a86a",
+    "legged_lab/assets/elf3_bxi_31/__init__.py": "832f23bdaf01e87626bd082623524595766dd1ae2e51902e6115af8e96461659",
+    "legged_lab/assets/elf3_bxi_31/ankle_limits.py": "1d7624e4e4133e9ecfdfcbedbf8a7bebbcc456f8778268a4be9d6d53c6542378",
     "legged_lab/assets/elf3_bxi_31/arm_guard_geometry.json": "b59ab264b62f8504fe8210f59803d41fb1687cd0e542206b7ec7573660caca10",
     "legged_lab/assets/elf3_bxi_31/control_parameters.json": "800dae8e36779b89257db388853ae53d9abee27df01c80341c3dde6981ed6d1c",
+    "legged_lab/assets/elf3_bxi_31/conversion_manifest.json": "8f89a1f578c45385c62a6e4aaa8c07ecfe05095e6a21d0e37fac7236704a4cbf",
     "legged_lab/assets/elf3_bxi_31/foot_collision_hulls.json": "41765509e14165b248310e01cfa5376f9531f192db74e462da3a93843f00c84f",
+    "legged_lab/assets/elf3_bxi_31/source/resources/elf3_dof31/urdf/elf3.urdf": "6ede896d8718593927e96953cee0ce66c2c56eacd6bec50f86604962d53a0410",
+    "legged_lab/assets/elf3_bxi_31/source/src/bxi_example_py_elf3/bxi_example_py_elf3/bxi_example_demo.py": "d59314b54339dfea78f6f3e9320126bf1b5791c4ba9da7dda7c03720e0a607a8",
+    "legged_lab/assets/elf3_bxi_31/source/src/bxi_example_py_elf3/bxi_example_py_elf3/policies/joints.py": "bf8d5696d1f1e6c7ab01eb21624b9f6936fbaa44bbde466929e6655f22515547",
+    "legged_lab/assets/elf3_bxi_31/validation_summary.json": "45313e33bd8d655f898844f70dc55b5dc209394450c38f698600a927986a0a8c",
+    "legged_lab/assets/elf3_bxi_31/verification.json": "ca0ed862a887200b363d86f0b38450d59699955d9a926ee582ac09b1ea8c610b",
     "legged_lab/assets/elf3_ik_upstream/PROVENANCE.json": "7c40cbf3e5075a755ada679395ff31579e59a26f671a6f265f6afdb6e311e3fe",
+    "legged_lab/assets/elf3_ik_upstream/arm_bridge.py": "dab9846c0bb0aa1a0bcd311466cf36e8313003019a7c60dc9d86cc64a71a9afa",
+    "legged_lab/assets/elf3_ik_upstream/elf3-dof31.urdf": "c0b98c7cd07183e441e66b40932bef9c500c2d59d9f6a2af370022df09270607",
+    "legged_lab/assets/elf3_ik_upstream/gravity.py": "adaaae4f736533b82ef46bfa1285e9c359d904d71a08f3bbeaec77a92537a2ca",
     "legged_lab/assets/elf3_ik_upstream/gravity_constants.json": "ae81aa2e430d168a53e628cc1f0771230bfbfde908d4b23ab9ac2a50b44238ed",
+    "legged_lab/assets/elf3_ik_upstream/mod.yaml": "5f1191892d85c2d78b91975c88f96072dc2e12f443461bd3b87a8b734a8409db",
     "legged_lab/assets/elf3_lite/__init__.py": "da15aa724f36500f8a857784b8a002638566a54a9108c355ee1badeb789aff30",
     "legged_lab/assets/elf3_lite/elf3.py": "1437be87c807003c2ade3e2d9f2c68c8eba011de41c2b62b21d3f7268b213db4",
+    "legged_lab/assets/elf3_lite/urdf/elf3.urdf": "6ede896d8718593927e96953cee0ce66c2c56eacd6bec50f86604962d53a0410",
     "legged_lab/assets/tienkung2_lite/__init__.py": "b01ab4f23460844228d83271267c060804cc43e57ae00f3bdd8d8fff57917fc9",
     "legged_lab/assets/tienkung2_lite/tienkung.py": "45ea088db2a5351f1d0dd380e66c1905bc049476c8fe86ed82066dea58a816c5",
+    "legged_lab/assets/tienkung2_lite/urdf/tienkung2_lite.urdf": "02b8b771863a717f9df0de8778ab3cb78af5a1e51a32a7ae325df84f8d559e2e",
     "legged_lab/envs/__init__.py": "e208159fb6221065d1fb21ec70b440355f0a90f900aa3c7083d5bae71dee03e8",
     "legged_lab/envs/base/base_config.py": "d20c020767d7561ff4ccd80c19e25da2336c6747e3ef94f78440e9565e7f4e55",
     "legged_lab/envs/base/base_env.py": "55b3ea5ad883be0d4fc504cdfb6e5fd2359d724c64d6df6f3646e48986d8ff77",
@@ -25,7 +43,7 @@
     "legged_lab/envs/elf3_tang/actions.py": "ad77efc1ab8847884b299c3b8a150cc48623dac082aaa45434932685914a7216",
     "legged_lab/envs/elf3_tang/arm_diagnostics.py": "a0efc227636af817b7d5a5fa111cc3b0c4a6ec5d6ad8c33e8b6eec2e51f230bb",
     "legged_lab/envs/elf3_tang/auxiliary.py": "9c7584a2743aaf2dc3391880e1e9aa7eba10b804dff3ab14739ebf893db52627",
-    "legged_lab/envs/elf3_tang/commands.py": "e804bfa70b5dcd148dd6bba33597365e733f3d0360cc4f3e3d512ea96bf7135f",
+    "legged_lab/envs/elf3_tang/commands.py": "bef1897648f7cf846c967e7de4985ab7cb1563628dc4285b16b823a11bacc402",
     "legged_lab/envs/elf3_tang/elf3_env.py": "45c6234e439cd1f24db63cc59598408b9040abb44215d1af5920ad19505e1af2",
     "legged_lab/envs/elf3_tang/focus_cfg.py": "de968c49a54fa0263f9d6e5abe162c83ea7e181d4b6f821ba971b84fa3e8bf8b",
     "legged_lab/envs/elf3_tang/gait_ablation.py": "7dac93e4235109a5a8c671e45def2da2d8603f8d69a52c978d719cb40673977a",
@@ -35,7 +53,7 @@
     "legged_lab/envs/elf3_tang/scratch_cfg.py": "a11669ab3550087d31091f9618e709459faa118d49978e4028ebe3efc43e232e",
     "legged_lab/envs/elf3_tang/scratch_curriculum.py": "3e2ed5b9580ab6d20ec51d7c4b40d18428cc2fb109f1675485b14eb650965422",
     "legged_lab/envs/elf3_tang/stand_cfg.py": "d811cf106ff2315b5cca0e44b6bf312d5f3372ab4e3687737a39047079101d8c",
-    "legged_lab/envs/elf3_tang/standing.py": "4e82f8acc7a1b7f5ac5630dea66dd6a4bc8cc6c1756ba03f05242a13a0cd57b2",
+    "legged_lab/envs/elf3_tang/standing.py": "236275be9c2f8ce8e47f3a680d272dcb46c1f93b42b393189456fefc9a6f428d",
     "legged_lab/envs/elf3_tang/standing_position.py": "5cd9dca3b3e60bf9fcb5fe8733865906bde29dd514324523ff002baf6e424cc2",
     "legged_lab/envs/elf3_tang/standing_position_term.py": "a903395363c3fc1165985e23dc265ad3f135c687cf34971758e0ecbac9d20a64",
     "legged_lab/envs/elf3_tang/standing_refine.py": "0558887b39aec1e903d00c33951557a05e39fd3d8801a8ca011c59908767f9c8",
@@ -49,13 +67,15 @@
     "legged_lab/envs/elf3_tang/walk_robust_cfg.py": "469c33b5656d1eac9c7079109cfdc3c91c5b3c44452e67e2186b941529f2537a",
     "legged_lab/envs/elf3_tang/walk_robust_curriculum.py": "c7d947bbdda264563cd8bde182bad0cbc5e08b7512e08ca496f0f0d0a4724e50",
     "legged_lab/envs/elf3_tang/wbc/__init__.py": "c8bf7a8f3c5d8881b52a65a45a80b75b2fdcd8710d737eb5cc3ea16effb13cc3",
+    "legged_lab/envs/elf3_tang/wbc/_arm_ruckig.cpython-311-x86_64-linux-gnu.so": "cd60f92cdfee121db78e13fe6fa71df50b46594910fd37d81b7b0e9aae826430",
     "legged_lab/envs/elf3_tang/wbc/amass.py": "45743531419f67d679f308b55701d6f65ea064e56b3f4d9daac606766f5166cd",
     "legged_lab/envs/elf3_tang/wbc/arm_gravity.py": "61d005666b922e8edcfc83e32ca78c919f8b4658b844971680975acc80d50c5a",
     "legged_lab/envs/elf3_tang/wbc/arm_guard.py": "de10e45c145eddfe9a0058374050ebd726aac881e0a47ac393cd049c5c90bf81",
     "legged_lab/envs/elf3_tang/wbc/arm_pose_tracker.py": "82ad929258dcee08bb868fb46e89584f57cf910d465ffa1ba765eb2b99d564fa",
     "legged_lab/envs/elf3_tang/wbc/elf3_arm_motion.py": "5014875926a75042f21851e45358f6ac75154218e127958f64a64e2628b117c7",
     "legged_lab/envs/elf3_tang/wbc/ik_arm_motion.py": "576234ab5a2b54c93a6d9cdc1ee7e8a557d457319d67e61409536a409060cdd2",
-    "legged_lab/envs/elf3_tang/wbc/predictive_arm.py": "4abaa67220fc7c6b397be0e7d23cb9a9609475ff208b52e9424dc093c526af2d",
+    "legged_lab/envs/elf3_tang/wbc/predictive_arm.py": "3c2a7fefd41e346a742123acf49828589cd830cac1d5f858a8280d5c7978376a",
+    "legged_lab/envs/elf3_tang/wbc/provenance.json": "1ecec1ec45d8611b4e94b7eb967056bc3592e66036bb75c7ff2353ffa1821557",
     "legged_lab/envs/elf3_tang/wbc/reward_cfg.py": "06629aa32342e103afc9c1b3dad6824826b0a78e63487e213443fff795047e07",
     "legged_lab/envs/elf3_tang/wbc/rewards.py": "16de4d2e80e9090f49a58d6bbe833f8b37ef7b7cfd297e5cbe86a2818b484f43",
     "legged_lab/envs/tienkung/run_cfg.py": "5676a8c373f022ec440b63b8655f81f28922829c32f466f3dc2af5c7e45c7c30",
@@ -66,6 +86,15 @@
     "legged_lab/mdp/__init__.py": "1137790900158b8d0548759836cfd446f50c8faf2b44f30b0e979140d4d0e82b",
     "legged_lab/mdp/rewards.py": "5ce14c1df758a53e447b28b00b51e4f164f7a503f8ea4e26c21ec6f0ea5d8205",
     "legged_lab/mdp/rewards_elf3.py": "ca35bd11cce5267fde15153a4093c3f6a8b17aefbf4c55e3f19cf8fdc555ae9a",
+    "legged_lab/scripts/amp_sim2sim.py": "45c37ae5673b2c02debaa9bc54b999c3e9fb30ba266db7b2edfd422ace4f9d0f",
+    "legged_lab/scripts/amp_sim2sim_lite.py": "c963f13f74d108954acd0047e14496cb808b882d904cd8f3b8173b405db02f10",
+    "legged_lab/scripts/gmr_data_conversion.py": "1da968cd1c136a06ccbe11ed08890731f0aedf35d351f0c722ca2fc07c4a8fbf",
+    "legged_lab/scripts/play.py": "e9be7cfd7dab4ec7ded4cef203a2fb5d81489f9ea2137fbae53f187e6899c28e",
+    "legged_lab/scripts/play_amp_animation.py": "c7436951fa9256d35ad7a7b3a49445845415c73b334bcdd447686f13f97e1616",
+    "legged_lab/scripts/play_ppo.py": "cb4af179a4a2d84531f103d8808f719454ec1d7b55077517ba7ad3478629857a",
+    "legged_lab/scripts/sim2sim.py": "d833c3f947b1d1010ef35cfd14707e3b3c8d1da8999189a6528fa2aed51670fc",
+    "legged_lab/scripts/train.py": "2c374dadba615b6f9b1824cfbe712fb56e0812f4b62ac77c5d799251bd3eca26",
+    "legged_lab/scripts/visualize_elf3_tang_arm_motion.py": "42c28d767bf007ed2517b5dfecfbcb8f8fafa8d97907bac4ca1f455bf4227ec6",
     "legged_lab/sensors/camera/__init__.py": "6ed070b9dbe714092febb919841eda6d9685e9a0f2970f4699bbad2b7edd955f",
     "legged_lab/sensors/camera/camera.py": "15217781cd590cf83d6c426c6ee01a5f75ac5f9ed581dd6a373483b5d301de74",
     "legged_lab/sensors/camera/camera_cfg.py": "a3a425ca724fe79086e904451b0ac0b6067fe102c3425094e7552ee31bd98b70",
@@ -87,23 +116,6 @@
     "legged_lab/utils/env_utils/scene.py": "0f86b3236f342873982edff0711773e02b295e610b3cfdaaeb20644fd1c0c61c",
     "legged_lab/utils/keyboard.py": "b033fe4ad961009549e34fbfe85bbdcc239d650dd01bb048d232f38c6da6b49d",
     "legged_lab/utils/task_registry.py": "d3f4d70b8d307ea29d0aec5563b9659ff789480c85421cbec506701e56c0ace3",
-    "rsl_rl/.github/LICENSE_HEADER.txt": "ba0bed4ed26c513c5ca00b65fc29489153e1a9fdbcedf5dfc8bfe5445c1abaa0",
-    "rsl_rl/.pre-commit-config.yaml": "1e1ed940397f9466ebc781838069374ab5756b1d36a383b7692cafd271eeb2b0",
-    "rsl_rl/LICENSE": "d96416ef724b3972dd9a8316008b1b51d8972c1be5fd0d38f0b4b1664b125e4e",
-    "rsl_rl/config/dummy_config.yaml": "3fa1ca3c58a2502d428e52222014642bfdf66a0461801510c96e6008bedcca3e",
-    "rsl_rl/licenses/dependencies/black-license.txt": "9c0428f0c3b4779850cf5bd96e11aaa8afc72d4a86d4a36223d7aba2e58d6e00",
-    "rsl_rl/licenses/dependencies/codespell-license.txt": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
-    "rsl_rl/licenses/dependencies/flake8-license.txt": "e46df9e59cebfbe0b14492e5cde341e8ec42d252a99b6a583fc4608863a5dabe",
-    "rsl_rl/licenses/dependencies/isort-license.txt": "063294001c3d523dbacbab9dd54ac229982756ccaf592ca53240b2b0cdd82065",
-    "rsl_rl/licenses/dependencies/numpy_license.txt": "c17011467b4fe6e20fbfbeda4df09e58c2bca5480a063e55735a4000a379aad9",
-    "rsl_rl/licenses/dependencies/onnx-license.txt": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
-    "rsl_rl/licenses/dependencies/pre-commit-hooks-license.txt": "ea2ca27cba7cc35822d95a46d59bcd3cc88e196592e6390d1949a359ffc990e8",
-    "rsl_rl/licenses/dependencies/pre-commit-license.txt": "ea2ca27cba7cc35822d95a46d59bcd3cc88e196592e6390d1949a359ffc990e8",
-    "rsl_rl/licenses/dependencies/pyright-license.txt": "285ac8fd620723b9ec86e59a10808360e9825658790f412a1ff6d5d499cc01da",
-    "rsl_rl/licenses/dependencies/pyupgrade-license.txt": "ec1e7339c4ff924852df2f5d74170120e3a722aab28c8b6ef20660c3dbe9a2b7",
-    "rsl_rl/licenses/dependencies/torch_license.txt": "6f598239866f2794b1170c870217a604b6acc98d4aeb4694d1a2f855da1f289c",
-    "rsl_rl/pyproject.toml": "ba8f03993dbc818b63003ba2e430aa843b6ca02719516aa99fe36b64589dcea6",
-    "rsl_rl/readme.md": "5a8af0bdf1a4b80554c4b2d1a5f7d41265d81b00f12d1288036405e96a746b06",
     "rsl_rl/rsl_rl/__init__.py": "dbe9ce32085757751f7dc5bc2c5a61befc2cc6db3fd0f49fe74268cfc4b28acc",
     "rsl_rl/rsl_rl/algorithms/__init__.py": "0457c5aafae34a73e85b51c7358af3a783fe64b2b46fd145802c6d5f432366fe",
     "rsl_rl/rsl_rl/algorithms/amp_ppo.py": "db6ce96c0146247b842e6c6427d50f5d9bba3b80aa4c38b2a179dc32f7257913",
@@ -134,22 +146,23 @@
     "rsl_rl/rsl_rl/utils/neptune_utils.py": "4d57144f9402a4dfedfbe71939b49b261bb66ec62ce6ada6a985a06709a8a9d0",
     "rsl_rl/rsl_rl/utils/utils.py": "cadb34c7653819cbeb4af80a554878013c0963fd30e92d31c92a8904453892b9",
     "rsl_rl/rsl_rl/utils/wandb_utils.py": "8824ca7437b4104ba168e7c0e8d052ddc4e636fb77203216f8cf561345286763",
-    "rsl_rl/setup.py": "b6288f219d6dd109d0f72af302845573f3f124fc9b3c419f7c471591bc3243f5",
     "tests/test_actor_auxiliary.py": "d91bf375e7f10f9de79b823ad53b153704828b8e0fa4683a2c2c11677c10c49e",
     "tests/test_adopt_training_process.py": "40457556af181044dbc25ce62b123e2ed4641d213fe5933db59f5eafdda3b8e0",
+    "tests/test_ankle_limits.py": "8c963c2ad60a0e9608cfae8926ea20e196b1c85ed3b090f729314d8124da9c09",
     "tests/test_arm_diagnostics.py": "d2c196d9b19251687c8b303e1d55c14e5af27107eac86d77135cdcc58afd2ffe",
     "tests/test_arm_guard.py": "6ec8305ddcd907ad4faffc2d27592c46479c3c89643ddd52ba23b4ae035e7749",
     "tests/test_auxiliary_resume.py": "254566dbe17d328ed1b8e3296eb702ab59e89beb67788f063b59baf4fd9eefbd",
     "tests/test_auxiliary_scratch.py": "835c4c349be630d8d0a235622fcb8b2f61271d342594c05897f5c298e7174d09",
     "tests/test_elf3_symmetry.py": "75df388f8479124355bdb6b6ef8d97964641f95134c657e108c50d66e4f0f1b4",
     "tests/test_evaluation_runtime.py": "c65b1ef42ad91f1bb39700b15e1fc9e6a5983f7934a53f215b1bb4758656785c",
-    "tests/test_fixed_pelvis_height.py": "befd26ef8ad42ff5a91df5d965cd37fe0d6c0f84fac1deb49b363c48efe0b272",
+    "tests/test_fixed_pelvis_height.py": "fa801fb3723219d03bcf0dba2b6bf22e97b8c510deee785659a450742147cb56",
     "tests/test_gait_ablation.py": "e3346fc2b265201bdc58202c4a5df42a5f6ec5a9c2069b37c7b7a9b5414e49c3",
     "tests/test_ik_execution.py": "a54db3973518e0b58aeb3d08a9437b5edf22cee7d072785e1703aaba1bb4a49a",
     "tests/test_ik_training.py": "ea37c95bb0b6cb68c7b56536447e6995a7f19d6774f72d3f4975509e2f5a8350",
     "tests/test_liftoff_rewards.py": "67875735bbdcc80ec82f2c944887ad91c2be37a4189182226c4f21c7dbe0f9ee",
     "tests/test_mujoco_evaluation_terrain.py": "79aefd27c1345fb3bd40f4a452ada457a75e08a5882ce76303565c751c62bbda",
     "tests/test_predictive_arm.py": "a173f2fab6fc3112036f78a264897c5fefffa5d647224d0e7bc6d900d1500c3c",
+    "tests/test_predictive_arm_solver_recovery.py": "7695469977ffaa1c7dcfb47c85e2d5848bee212b2f95a67f108dac7125d4f314",
     "tests/test_scratch_repair.py": "23410d3c8dcd346592583cfa85e8c74964986067b781dbdc9aa6485be00acc5f",
     "tests/test_scratch_training.py": "0712b42d03b88571cf1e0e1201afe4c51d573766ae27968920adf172df382cf4",
     "tests/test_stall_ablation_rewards.py": "ec819bd5e78da546e1b1ca9dfed0eae80f087a24f600d63f53c78bd4003d0c15",
@@ -164,12 +177,15 @@
     "tests/test_teleop_curriculum.py": "e3cc9141bceb6156af4678d265cf1c367a4d42f19a2c3e0110a00350ca904b6e",
     "tests/test_teleop_standing.py": "3d53a25b9b17a939c61d38f60b7bf5522495c40da00c0350e05fe3a2184a1a07",
     "tests/test_training_continuation.py": "88ca499d4f89cd42d45a1b64bf92e78491b60f437bdfea96d328f30595d11a7b",
+    "tests/test_variable_height.py": "70bd0c2386a4f350e54d3da11106ff96183346d75dc4c4d4b217df277ceb62d4",
+    "tests/test_waist_yaw_training.py": "f64069079e9690cd652780fb4a184f3e4213893cec9d3f5e842ce0fa132fdf0d",
     "tests/test_walk_robust.py": "d7cf627cb6f91d8b70d2d24716f5c2f61b8ef95943a09a8d10bc017144000fee",
     "third_party/ruckig/LICENSE": "f0880ac5e5026c92e12c9e2859a7b338c593aaca1a435f29498bd96cbb64d7d3",
     "third_party/ruckig/PROVENANCE.json": "567fd8b9a9b374400b330a8e7180b8d4d558418666cdaf6ab2086a34bef9025a",
     "third_party/ruckig/include/ruckig/block.hpp": "be36a9854fa0830c283df3aaef5f80c38f59ca29270981a1e1cc8b3c81a40d48",
     "third_party/ruckig/include/ruckig/brake.hpp": "f4d30e1f19b239564e9f1d54eb5de7e6b761c797f42a49cbccb43677d0e89b59",
     "third_party/ruckig/include/ruckig/calculator.hpp": "24fb044a409dfbed598a4b83a315ed6ce339efc184694bccac27ef2ae3bd9036",
+    "third_party/ruckig/include/ruckig/calculator_cloud.hpp": "a5a48e945f92956f7cf181bfc3dde66ae5e19149b4cc64b655e0a5a15b646069",
     "third_party/ruckig/include/ruckig/calculator_target.hpp": "35b49c0e0dc606646f419e285c6633171df394851dc95c6b4bb99e9f7009aa74",
     "third_party/ruckig/include/ruckig/error.hpp": "0c0d0d3b3c29df72207d0358934f604bf4a3b39125fc69bf3c7d00be9e34c071",
     "third_party/ruckig/include/ruckig/input_parameter.hpp": "37a4dc34e2093e775e3fd5ae6c34971661fd852ed165ee9e7ddc3dcb0b1cc96d",
@@ -183,12 +199,14 @@
     "third_party/ruckig/include/ruckig/utils.hpp": "f17266d17a0dc7f725402a9732c763af8fe84d32d53f7e8d748eff79f3cddee9",
     "third_party/ruckig/include/ruckig/velocity.hpp": "3bd62b430b304b5a140346b03bdf097024411287cd0cb27db53bd0e35e0e7dff",
     "third_party/ruckig/src/ruckig/brake.cpp": "7868192cf3b83a57a57f49e553319c8fdc8e64bebbaf6fc54a486450dbd8090a",
+    "third_party/ruckig/src/ruckig/cloud_client.cpp": "0aaf89c2b83c00be1a76db8cc48ea3c382cc6c79612b10dc811630e921876bf3",
     "third_party/ruckig/src/ruckig/position_first_step1.cpp": "db27cc0fa9c1b61932e47f65049e8366e8eb7b015955141ae41952934085fad6",
     "third_party/ruckig/src/ruckig/position_first_step2.cpp": "4d810791dc0b48735f1e78db2059615d1eded944112b456bf322b0a718eed7d8",
     "third_party/ruckig/src/ruckig/position_second_step1.cpp": "d03a1ef6edb2932ea61352a40a56e59879940002db410fce38d8dbd1dd774c8b",
     "third_party/ruckig/src/ruckig/position_second_step2.cpp": "fccf0f7f56069cdfea8309be626c29c7dcc36380e267e5d1f11c5f2e20b0c40e",
     "third_party/ruckig/src/ruckig/position_third_step1.cpp": "48b2589c77257e34e724c7f86f42ce2ac9d8e8119c581078abf6c905a712828f",
     "third_party/ruckig/src/ruckig/position_third_step2.cpp": "84e560a3a2621e293f55de5c6b8cb6f3b7dba88905345145aca9567ad4a81790",
+    "third_party/ruckig/src/ruckig/python.cpp": "1bddca1c56af217cd0beeec7bffc648ff717557cf25fc7b81ff9b6f01fedc9d9",
     "third_party/ruckig/src/ruckig/velocity_second_step1.cpp": "00f27088b1172244660b4091d751bac6ef9593bfed7b7b75e06bf3b667b9762d",
     "third_party/ruckig/src/ruckig/velocity_second_step2.cpp": "fcae4250f109c85b2161322ac2b83e164638a7064c241a534c10847868edd0bf",
     "third_party/ruckig/src/ruckig/velocity_third_step1.cpp": "053de9e6eb5662c069ab1dc88fadef6f42f72fa28be375a1fa9c78c6f77c7b85",
@@ -198,7 +216,7 @@
     "tools/analyze_saved_walk_gait.py": "a8eb2001a5020b382db18e6aac3f34c77955414d3a2a2f978b8d1dd6282ee1b9",
     "tools/arm_speed_metrics.py": "6eb914fcca00cd684eab3658184db1368dbc7db9daee954488e46999908a2744",
     "tools/audit_auxiliary_initialization.py": "6c4cf2486c3c5c59e37e1daf7fbcdada44dfb5613ff4cc6a6cca808e0a71bf4c",
-    "tools/audit_auxiliary_resume.py": "4119ba3cc4f47d3f28d18f61b534778bae76c93569a8ff5b2581901192109691",
+    "tools/audit_auxiliary_resume.py": "51b229d077f33918252dc6c4894b95bdf1da23f5fb1b9f5e246ea4d9729de2b4",
     "tools/build_arm_ruckig.py": "61cf7bfb1c701d2283175d75929527df4af7639649508897292e3339dce321ee",
     "tools/check_elf3_bxi_runtime.py": "5164f167ded67dd10d4ab7c182ee889891db59f4657ca9c1d871925d3ac855ee",
     "tools/check_scratch_training.py": "4b2196b17ba48d5c6e27e1f3a90fea69bc134f348b7b02a8f9f8ac004824a2e6",
@@ -214,16 +232,16 @@
     "tools/elf3_ik_core.py": "29de2c7624caae49dc174a168cd9e802fb2bca1a730fcd475a57ad90f8989ee1",
     "tools/evaluate_actor_auxiliary.py": "c629848c41f72bab6ebadf528de5936d17108a381c6886748745fdd34f30c0dc",
     "tools/evaluate_arm_speed.py": "f10d000590e11895747cab03f0438916dc8f17701121fcf95a86fc29055d4a9d",
-    "tools/evaluate_dynamics_checkpoint.py": "eff78b47c34c130d98fb2e04ea07ad52e3b2b59a49d2a57e1d785a8fffb13108",
+    "tools/evaluate_dynamics_checkpoint.py": "8aacb14c7c107c7bc60467a2aa1262797ceac79e65b879527769927940628cec",
     "tools/evaluate_ik_policy.py": "49e1465feb81869c0ce4c73ca702d13489d48c2d803c313f9c7801e2678d9d5f",
     "tools/evaluate_standing_candidate.py": "1cab68bceef8680c4265513bf6e30594872b3fc4cbec1a3a945331687bccc2b8",
     "tools/evaluate_tang_standing.py": "bc8ed45d52dbd51b1cae611515e3ad66cfe8ab288593cd36e40a693c95cb6daf",
     "tools/evaluate_teleop_curriculum.py": "6e6c47c9de9970f57a02952ea37c7a3e1a1c627e9ec61d917f9b7857ea77ca76",
     "tools/evaluate_walk_mujoco_standing.py": "2aaf42ce166588270c2e2b1b0559d814cbc5618e889c931b9022cc75c62d3a13",
-    "tools/evaluate_walk_tang.py": "c5fa1dd5ccac2c96a31f753b277ce26427ac8b235812f5ba5effc49e156ee47c",
-    "tools/evaluation_runtime.py": "d660a9d4984f2579e034e8ebddb4841a93e6e590454f93e4fd1e9a8863797ca1",
-    "tools/export_walk_actor_onnx.py": "dce13ec2bb37ee5522de39d4b1782a8008b9cdfe73b59dcaf2b515c720d86647",
-    "tools/fixed_pelvis_height.py": "f955bba2861e6934c1b0be00cf7bde20d31abdfd4169736f2d9a4957c2397f82",
+    "tools/evaluate_walk_tang.py": "a1edea5c84839757d211ed8635c4ddf93e6faa64943ed8744577f795987fa8bd",
+    "tools/evaluation_runtime.py": "b848210fd219aa38a7e24874a75332c1d005a0fa900e34c6eae9ee35dbd94387",
+    "tools/export_walk_actor_onnx.py": "6980c6d59b8ec0ec0181105ab66c819097906aed87c75b99fb132d37f7b3fc76",
+    "tools/fixed_pelvis_height.py": "2e5a8206dd72f0d8e8356fc03e0c6afc9f6f967a6b516d978a278caebeb21a61",
     "tools/generate_ik_arm_bank.py": "4f96866920b051c348c00c9c6f8a7fef4ff609ece68589ed15ec28a583d97637",
     "tools/mujoco_evaluation_terrain.py": "b32ce895398e61bcf80883acf04a02759a7abacf0f7fa445cdeb91e481037cb1",
     "tools/native/arm_ruckig.cpp": "9bf296a5ee818a0258c07d0147917f5554f199bb2d7581c2a8fa9e411f811f9b",
@@ -239,117 +257,23 @@
     "tools/run_stall_ablation_case.py": "e48078d909b179bd32988f6ac4823aa90db8d0661daf70de4fa8190f46f03667",
     "tools/run_stall_ablation_suite.py": "b1cdb1b9f64d3d206dd6f3a48ee5c2db78c484e6f7b9c85f00c75919c5195797",
     "tools/run_teleop_curriculum.py": "ddb5155d92f8aeebd3288120d75ecb6f9f1da892c6d0847640dcfa3846927870",
-    "tools/run_walk_robust_training.py": "172d7a38ad15c2f602d6ce088e57fb7efd75ac5997910179ec041b59d182ec60",
+    "tools/run_walk_robust_training.py": "795324f41f76fc9f6ac0dfaaed81627c62f7d709e16f2a106acb67a9b37df3aa",
     "tools/scratch_training_gates.py": "5c0d7e33290ea317e0e39f2d83bafed59aa2e8115c442d3e0ea9124306c506f4",
     "tools/stall_ablation_rewards.py": "220f3327c80034e92432f0aebddbd652dccfc24f20ca1e3fe8e1c3d531c866cc",
     "tools/summarize_gait_validation.py": "a02daae67731d5e8772be5734b05103bcb30907d6e1c44f5ab4cf45888fd9289",
     "tools/teleop_curriculum.py": "2dc3ffb4b5308a1ce2705fe2a35c9989319403f570ae3a8e262433be52ec8190",
     "tools/teleop_curriculum_gates.py": "98b7c6461b186278b5e2d8a6941ea97be70d01dbb009b073a558c9ea20ca7fe6",
     "tools/verify_elf3_bxi_usd.py": "5066374de85fefd181cb23928f2ef0d3a1b7eddf9f6018fb4ce92258d7a32043",
-    "tools/walk_robust_gates.py": "4c6a3311ca91efe760b379a19c51fdc27f5b53d86b3b1371aea536fc04d1e00f",
-    "legged_lab/scripts/train.py": "dd7e90c1eb6ac820176adebf3aea19a91062a83acb9d292786d15ec69a24862e",
-    "legged_lab/scripts/play_ppo.py": "cb4af179a4a2d84531f103d8808f719454ec1d7b55077517ba7ad3478629857a",
-    "legged_lab/scripts/play.py": "e9be7cfd7dab4ec7ded4cef203a2fb5d81489f9ea2137fbae53f187e6899c28e"
+    "tools/waist_yaw_training.py": "24af638cf786e3797de059114addbd3d6f52b63aca5d06d7323b6f074c3232d1",
+    "tools/walk_robust_gates.py": "4c6a3311ca91efe760b379a19c51fdc27f5b53d86b3b1371aea536fc04d1e00f"
   },
-  "portable_package_base_date": "2026-10-09",
-  "training_snapshot": "provenance/training_snapshot.json",
-  "training_source_sha256": "provenance/training_source_sha256.json",
-  "portable_changes": {
-    "legged_lab/assets/elf3_bxi_31/__init__.py": {
-      "training_source_sha256": "1f320cc4c1bbf577b1213a4bf48863ee98d1b487182ed233317fea348958a86a",
-      "packaged_sha256": "6214361fd1dcec8d621b7cf0e0fa7c08c9a658c50e4b4184def6ee3afbd8f5a5"
-    },
-    "legged_lab/assets/elf3_bxi_31/control_parameters.json": {
-      "training_source_sha256": "800dae8e36779b89257db388853ae53d9abee27df01c80341c3dde6981ed6d1c",
-      "packaged_sha256": "f7f164d5b2eca561932b3ccccc7ba1d39b6fb475090862495c6f211c83214e47"
-    },
-    "legged_lab/envs/__init__.py": {
-      "training_source_sha256": "e208159fb6221065d1fb21ec70b440355f0a90f900aa3c7083d5bae71dee03e8",
-      "packaged_sha256": "af261e259aa932bbd28e49833134ce2440bd155a511862b2cd2069bcb10062b5"
-    },
-    "legged_lab/envs/elf3_tang/walk_cfg.py": {
-      "training_source_sha256": "5fddf6ff067219dcba5d076ea8d2722de27a0ecf71c7a4660ac5a800498d9210",
-      "packaged_sha256": "88885c3928cc021e108b64f01bee959e4e97f50ee352d04e2a193c82aa43b1c5"
-    },
-    "tests/test_actor_auxiliary.py": {
-      "training_source_sha256": "d91bf375e7f10f9de79b823ad53b153704828b8e0fa4683a2c2c11677c10c49e",
-      "packaged_sha256": "45bd79902ae405359b2c3881dfdd726209c1c7e61a35d294bb0a467bd97c8df4"
-    },
-    "tests/test_elf3_symmetry.py": {
-      "training_source_sha256": "75df388f8479124355bdb6b6ef8d97964641f95134c657e108c50d66e4f0f1b4",
-      "packaged_sha256": "db85b2bcd9c231bb78cae056abdddd39274970f0b22308df373aa8c079223493"
-    },
-    "tests/test_ik_execution.py": {
-      "training_source_sha256": "a54db3973518e0b58aeb3d08a9437b5edf22cee7d072785e1703aaba1bb4a49a",
-      "packaged_sha256": "d6531515d3cabc1717405337f2b65feb30dfacf8f6655c8df23d198ec3c7642f"
-    },
-    "tests/test_ik_training.py": {
-      "training_source_sha256": "ea37c95bb0b6cb68c7b56536447e6995a7f19d6774f72d3f4975509e2f5a8350",
-      "packaged_sha256": "4238dcd8545738ae6936d106f01b08bc3fda7acb085ac4a04dc46e4e446883eb"
-    },
-    "tests/test_predictive_arm.py": {
-      "training_source_sha256": "a173f2fab6fc3112036f78a264897c5fefffa5d647224d0e7bc6d900d1500c3c",
-      "packaged_sha256": "88e7bc7706ff75cf4eb08a90dc435f51e39cb6fee1e0ac88ec2aa5d772dc1f64"
-    },
-    "tools/convert_elf3_bxi.py": {
-      "training_source_sha256": "8e35bb47736dfe2d476d541c9e381b8b56ab433e50f124446f8e678a275ea08d",
-      "packaged_sha256": "c8631e508481ccab42492bdb3924259fc2d86e58f0df4f54ddc5b399748eb702"
-    },
-    "tools/diagnose_walk_mujoco.py": {
-      "training_source_sha256": "afd63389012b06891386df61117a5d8c71cc13374738b66c887836451016f321",
-      "packaged_sha256": "a4918905aea2320b0ed072837698bde41d79fb9561a0ef5979afba7d305d5590"
-    },
-    "tools/elf3_ik_core.py": {
-      "training_source_sha256": "29de2c7624caae49dc174a168cd9e802fb2bca1a730fcd475a57ad90f8989ee1",
-      "packaged_sha256": "82b493ccd27bd995342e21b22bc4cfb80022458c6572b9f1f658d864bd00687c"
-    },
-    "tools/evaluate_dynamics_checkpoint.py": {
-      "training_source_sha256": "eff78b47c34c130d98fb2e04ea07ad52e3b2b59a49d2a57e1d785a8fffb13108",
-      "packaged_sha256": "e3ff842c7b1a21063482b0a3ad5fb7eb1c597439cdbabe880e6aea5be3d27a61"
-    },
-    "tools/evaluate_ik_policy.py": {
-      "training_source_sha256": "49e1465feb81869c0ce4c73ca702d13489d48c2d803c313f9c7801e2678d9d5f",
-      "packaged_sha256": "10e42cd08d4cf8ff6477a6c1192bfb078d7f2e5d4d4ac057f9a71b773dab9103"
-    },
-    "tools/evaluate_standing_candidate.py": {
-      "training_source_sha256": "1cab68bceef8680c4265513bf6e30594872b3fc4cbec1a3a945331687bccc2b8",
-      "packaged_sha256": "4a7669ed869da9bbabf8381a516150310cb340d244e81f7665b73ff408754022"
-    },
-    "tools/evaluate_teleop_curriculum.py": {
-      "training_source_sha256": "6e6c47c9de9970f57a02952ea37c7a3e1a1c627e9ec61d917f9b7857ea77ca76",
-      "packaged_sha256": "ad74e8ed520fff516d93ff7be5ada60b7a6151af0d534f7dd5a09d4f11ee169a"
-    },
-    "tools/evaluate_walk_mujoco_standing.py": {
-      "training_source_sha256": "2aaf42ce166588270c2e2b1b0559d814cbc5618e889c931b9022cc75c62d3a13",
-      "packaged_sha256": "8fdd194a27935430c174649c4cc218e1713bf912427e8a3de4e8c58693c44e29"
-    },
-    "tools/generate_ik_arm_bank.py": {
-      "training_source_sha256": "4f96866920b051c348c00c9c6f8a7fef4ff609ece68589ed15ec28a583d97637",
-      "packaged_sha256": "384bbf4938b2bbc9b33728068139ee31ea9d91c5cb9e36ef5a173474c967e362"
-    },
-    "tools/plan_ik_arm_bank_v3.py": {
-      "training_source_sha256": "b79049d7710d7320dad12de30ff926269f72995b83f71460764e3ea218f119e6",
-      "packaged_sha256": "e98d8a92e2b61cdf608bc327fe8fde87b11e76c10d577336a5bcc010f4b554bd"
-    },
-    "tools/repair_ik_arm_bank.py": {
-      "training_source_sha256": "43607c4357aa2ee32b3afaf36dc5496a555d15dd9c1eebc8ce964c16d594fd8e",
-      "packaged_sha256": "79d93d0e94e5492a56cc3010fdfdb569f3ac6e62f7d0fdfdc828e8423f417c71"
-    },
-    "tools/run_gait_ablation.py": {
-      "training_source_sha256": "3958120d663bf5f8cc459175fe826ba52fb128284d17d1baca97642c507971f2",
-      "packaged_sha256": "6e18520b8a32d23e2f775ea8340a919d07fa6254fcbe52510193ab5a5aad15a4"
-    },
-    "tools/run_walk_robust_training.py": {
-      "training_source_sha256": "172d7a38ad15c2f602d6ce088e57fb7efd75ac5997910179ec041b59d182ec60",
-      "packaged_sha256": "401d1af4e5f984426d9e963b885dc6420afaa286b28ebfa71bba6bfd8b5aa63a"
-    },
-    "tools/verify_elf3_bxi_usd.py": {
-      "training_source_sha256": "5066374de85fefd181cb23928f2ef0d3a1b7eddf9f6018fb4ce92258d7a32043",
-      "packaged_sha256": "4bf8cf93a3606d333f8c046bd529d36c9ac1a52cb6722c48d5a75a840dfb177c"
-    },
-    "legged_lab/scripts/play.py": {
-      "training_source_sha256": "e9be7cfd7dab4ec7ded4cef203a2fb5d81489f9ea2137fbae53f187e6899c28e",
-      "packaged_sha256": "37a2b83704bb04a669c0fbcfbb1943ab47621661896348c573b3da2b72552839"
-    }
-  }
+  "portable_changes": [
+    "Relative robot/IK/AMASS/BXI resource paths and packaged display-motion initialization files",
+    "Only ELF3 Tang tasks are registered; unrelated original robot families are omitted",
+    "Portable explicit-ONNX MuJoCo adapter and external IK source loader retained from the prior export",
+    "Current trainer, variable-height recipe, ankle PhysX limits and bounded Ruckig fallback copied from the active runtime",
+    "Deployment entrypoints, isolated dependency setup, background launch, preflight, smoke validation and scoped archives"
+  ],
+  "training_snapshot": "provenance/current_training.json",
+  "history": "provenance/history_20261011/"
 }

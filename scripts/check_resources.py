@@ -14,7 +14,9 @@ def check(deployment=False, bank=None, amass=False):
     errors = []
     asset = robot_asset_dir()
     expected = json.loads((ROOT/'legged_lab/assets/elf3_bxi_31/control_parameters.json').read_text())
-    for relative in ['usd/elf3.usd', 'control_parameters.json', 'source/' + expected['urdf_relative_path']]:
+    for relative in ['usd/elf3.usd', 'control_parameters.json', 'source/' + expected['urdf_relative_path'],
+                     'motion_visualization/stand_back.txt', 'motion_visualization/walk_left.txt',
+                     'motion_visualization/walk_right.txt']:
         if not (asset/relative).is_file():
             errors.append(f'Missing robot resource: {asset/relative}; see docs/installation.md')
     if (asset/'control_parameters.json').is_file():

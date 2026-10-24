@@ -27,9 +27,17 @@ def validate_saved_isaac(checkpoint, output, task, mixed=False, gait=False, auxi
     if report['task'] != task or not report['arm_guard_enabled']:
         raise ValueError('Saved Isaac task/guard settings do not match')
     if task in ('walk_elf3_tang_bxi_robust', 'walk_elf3_tang_bxi_still') and (Path(checkpoint).parent/'params/env.yaml').is_file():
-        from fixed_pelvis_height import checkpoint_height
-        if report.get('height_command', .8235) != checkpoint_height(checkpoint):
+        from fixed_pelvis_height import checkpoint_height, checkpoint_height_range, range_height_scenarios
+        if report.get('height_command', .8235) != checkpoint_height(checkpoint, require_fixed=False):
             raise ValueError('Saved Isaac height command does not match the checkpoint recipe')
+        height_range = checkpoint_height_range(checkpoint)
+        if height_range[0] < height_range[1]:
+            if tuple(report.get('height_command_range', ())) != height_range:
+                raise ValueError('Saved Isaac report lacks the variable-height range')
+            required_names = {name for name, _ in range_height_scenarios([], height_range)}
+            for profile in report['profiles']:
+                if not required_names.issubset({row['scenario'] for row in profile['scenarios']}):
+                    raise ValueError('Saved Isaac report lacks lower-height locomotion scenarios')
     for required, key in ((mixed, 'mixed_yaw_scenarios'), (gait, 'gait_diagnostics'),
                           (auxiliary, 'auxiliary_probe')):
         if required and not report.get(key):

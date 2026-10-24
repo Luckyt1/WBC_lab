@@ -114,14 +114,28 @@ def main():
         cfg.reward = LiteRewardCfg()
         cfg.arm_motion.source = 'random'
     fixed_height = None
+    commanded_height_range = None
+    waist_yaw_recipe = None
     if args.task in ('walk_elf3_tang_bxi_robust', 'walk_elf3_tang_bxi_still'):
-        from tools.fixed_pelvis_height import checkpoint_height, configure_fixed_height, height_scenarios
-        fixed_height = checkpoint_height(args.checkpoint)
-        configure_fixed_height(cfg, fixed_height)
-        SCENARIOS = height_scenarios(SCENARIOS, fixed_height)
+        from tools.fixed_pelvis_height import (checkpoint_height, configure_fixed_height, height_scenarios,
+            checkpoint_height_range, configure_height_range, range_height_scenarios)
+        fixed_height = checkpoint_height(args.checkpoint, require_fixed=False)
+        commanded_height_range = checkpoint_height_range(args.checkpoint)
+        if commanded_height_range[0] < commanded_height_range[1]:
+            configure_height_range(cfg, commanded_height_range, 0)
+            SCENARIOS = range_height_scenarios(SCENARIOS, commanded_height_range)
+        else:
+            configure_fixed_height(cfg, fixed_height)
+            SCENARIOS = height_scenarios(SCENARIOS, fixed_height)
         from legged_lab.envs.elf3_tang.liftoff_rewards import checkpoint_recipe, configure_liftoff_rewards
         if checkpoint_recipe(args.checkpoint) is not None:
             configure_liftoff_rewards(cfg)
+        from tools.waist_yaw_training import checkpoint_waist_yaw, configure_waist_yaw, waist_yaw_scenarios
+        waist_yaw_recipe = checkpoint_waist_yaw(args.checkpoint)
+        if waist_yaw_recipe is not None:
+            configure_waist_yaw(cfg, waist_yaw_recipe['bounds'], waist_yaw_recipe['start_iteration'],
+                                waist_yaw_recipe['ramp_updates'])
+            SCENARIOS += waist_yaw_scenarios(commanded_height_range, waist_yaw_recipe['bounds'])
     if args.curriculum_stage and args.task != 'walk_elf3_tang_bxi_scratch':
         raise ValueError('--curriculum-stage requires the scratch task')
     if args.arm_guard:
@@ -248,6 +262,8 @@ def main():
               'arm_motion_source': cfg.arm_motion.source,
               'configuration_profile': args.profile,
               'height_command': fixed_height,
+              'height_command_range': commanded_height_range,
+              'waist_yaw_command_range': waist_yaw_recipe['bounds'] if waist_yaw_recipe else None,
               'liftoff_reward_recipe': getattr(cfg, 'liftoff_reward_recipe', None),
               'arm_guard_enabled': cfg.arm_motion.collision_guard,
               'amass_scale': 1., 'neutral_reference_fraction_in_amass_profiles': 0.,

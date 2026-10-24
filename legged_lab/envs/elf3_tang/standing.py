@@ -54,6 +54,17 @@ def transition_metrics(env):
         'Turning/turn_rate_mae': masked_mean((data.body_ang_vel_w[:, env.pelvis_body_id, 2] - command[:, 2]).abs(), turn),
         'Moving/velocity_xy_error': masked_mean((velocity - command[:, :2]).norm(dim=-1), move),
     }
+    yaw_command = env.command_generator.full_command[:, 4]
+    yaw_error = wrap_to_pi(waist_yaw(env) - yaw_command).abs()
+    yaw_active = yaw_command.abs() > .02
+    result.update({
+        'Commands/waist_yaw_active_fraction': yaw_active.float().mean(),
+        'Commands/waist_yaw_abs_target_rad': yaw_command.abs().mean(),
+        'WaistYaw/active_mae_rad': masked_mean(yaw_error, yaw_active),
+        'WaistYaw/standing_mae_rad': masked_mean(yaw_error, stand & yaw_active),
+        'WaistYaw/moving_mae_rad': masked_mean(yaw_error, ~stand & yaw_active),
+        'WaistYaw/neutral_mae_rad': masked_mean(yaw_error, ~yaw_active),
+    })
     mode = getattr(env.command_generator, 'sampled_mode', None)
     if mode is not None:
         lateral, crouch = mode == 3, mode == 4

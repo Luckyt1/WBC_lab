@@ -1,0 +1,10 @@
+# CPU evaluation; keep separate from Pinocchio's NumPy 2 environment.
+numpy==1.26.0
+scipy==1.15.3
+PyYAML==6.0.2
+mujoco==3.14.0
+onnx==1.21.0
+onnxruntime==1.30.0
+GitPython==3.1.62
+tensorboard==2.21.0
+pytest>=8,<10

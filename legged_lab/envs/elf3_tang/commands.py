@@ -45,6 +45,10 @@ class TangCommandCfg:
     turning_speed_range: tuple | None = None  # magnitude, equal left/right samples
     isolate_standing_pose: bool = False  # height OR waist yaw, never both together
     sampling_height_range: tuple | None = None
+    height_sampling_all_modes: bool = False
+    waist_yaw_sampling_all_modes: bool = False
+    waist_yaw_start_iteration: int | None = None
+    waist_yaw_end_iteration: int | None = None
     sampling_waist_yaw_range: tuple | None = None
     mode_start_iteration: int = 0
     mode_end_iteration: int = 8000
@@ -109,6 +113,10 @@ class TangCommands:
                 raise ValueError('Initial command mode fractions must be four non-negative fractions summing to <=1.')
         if not 0 <= cfg.rel_neutral_standing <= 1:
             raise ValueError("Neutral standing fraction must lie between zero and one.")
+        yaw_times = (cfg.waist_yaw_start_iteration, cfg.waist_yaw_end_iteration)
+        if any(t is not None for t in yaw_times):
+            if any(t is None for t in yaw_times) or not 0 <= yaw_times[0] < yaw_times[1]:
+                raise ValueError('Waist yaw curriculum needs ordered nonnegative start/end iterations')
         if not 0 <= cfg.mixed_yaw_fraction <= 1:
             raise ValueError('Mixed yaw fraction must lie between zero and one')
         if cfg.mixed_yaw_fraction:
@@ -151,8 +159,12 @@ class TangCommands:
     def pose_ranges(self):
         p = curriculum_progress(self.iteration, self.cfg.pose_start_iteration, self.cfg.pose_end_iteration)
         blend = lambda a, b: tuple(x + p * (y - x) for x, y in zip(a, b))
-        return (self.cfg.sampling_height_range or blend(self.cfg.height_initial_range, self.cfg.height_range),
-                self.cfg.sampling_waist_yaw_range or blend(self.cfg.waist_yaw_initial_range, self.cfg.waist_yaw_range))
+        height = self.cfg.sampling_height_range or blend(self.cfg.height_initial_range, self.cfg.height_range)
+        if self.cfg.waist_yaw_start_iteration is not None:
+            p = curriculum_progress(self.iteration, self.cfg.waist_yaw_start_iteration,
+                                    self.cfg.waist_yaw_end_iteration)
+        return (height, self.cfg.sampling_waist_yaw_range or
+                blend(self.cfg.waist_yaw_initial_range, self.cfg.waist_yaw_range))
 
     def mode_fractions(self):
         final = (self.cfg.rel_standing_envs, self.cfg.rel_turning_envs,
@@ -244,6 +256,21 @@ class TangCommands:
                             & (torch.rand(n, device=self.device) < self.cfg.mixed_yaw_fraction))
                 signs = torch.where(torch.rand(n, device=self.device) < .5, -1., 1.)
                 self.target[env_ids[selected], 2] = (signs*r.uniform_(*self.cfg.mixed_yaw_range))[selected]
+            if self.cfg.height_sampling_all_modes:
+                # Height is independent of velocity mode, including standing and
+                # lateral motion whose legacy branches force nominal height.
+                height_range, _ = self.pose_ranges()
+                self.target[env_ids, 3] = r.uniform_(*height_range)
+                nominal = torch.rand(n, device=self.device) < self.cfg.rel_nominal_height
+                self.target[env_ids[nominal], 3] = self.cfg.nominal_height
+            if self.cfg.waist_yaw_sampling_all_modes:
+                # Apply last: legacy neutral-standing/lateral branches zero yaw.
+                # This opt-in recipe samples torso-relative yaw independently of
+                # pelvis velocity/height, including stationary feet and low poses.
+                _, yaw_range = self.pose_ranges()
+                self.target[env_ids, 4] = r.uniform_(*yaw_range)
+                straight = torch.rand(n, device=self.device) < self.cfg.rel_zero_waist_yaw
+                self.target[env_ids[straight], 4] = 0
         self.full_command[env_ids, :3] = self.target[env_ids, :3]
         self.is_standing_env[env_ids] = (self.target[env_ids, :3].abs().sum(-1) < 1e-6)
         self.time_left[env_ids] = r.uniform_(*self.cfg.resampling_time_range)

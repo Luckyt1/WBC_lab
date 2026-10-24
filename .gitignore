@@ -67,5 +67,6 @@ venv/
 data/
 *.so
 *.o
+BUNDLE_MANIFEST.json
 # Small sampled test fixtures, not the production trajectory bank
 !tests/fixtures/ik_banks/**/*.npz

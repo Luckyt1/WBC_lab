@@ -111,13 +111,32 @@ def expected_ik_recipe(before,bank):
 
 
 def verify_recipe(source_run, resumed_run, target_height=None, curriculum_stage=None,
-                  disable_symmetry=False,ik_bank=None):
+                  disable_symmetry=False,ik_bank=None, height_range=None,
+                  height_curriculum_start=0, height_curriculum_updates=10000,
+                  waist_yaw_range=None, waist_yaw_curriculum_start=5000, waist_yaw_curriculum_updates=15000):
     def read(run, filename):
         return yaml.load((Path(run)/'params'/filename).read_text(), Loader=yaml.BaseLoader)
     before, after = read(source_run, 'env.yaml'), read(resumed_run, 'env.yaml')
+    # Legacy checkpoints predate this opt-in command field.
+    for config in (before, after):
+        if 'commands' in config:
+            config['commands'].setdefault('height_sampling_all_modes', 'false')
+            config['commands'].setdefault('waist_yaw_sampling_all_modes', 'false')
+            config['commands'].setdefault('waist_yaw_start_iteration', 'null')
+            config['commands'].setdefault('waist_yaw_end_iteration', 'null')
+    if height_range is not None:
+        if target_height is not None:
+            raise ValueError('Fixed height and variable height are mutually exclusive')
+        from tools.fixed_pelvis_height import expected_height_range_recipe
+        before = expected_height_range_recipe(before, height_range, height_curriculum_start,
+                                              height_curriculum_updates)
     if target_height is not None:
         from tools.fixed_pelvis_height import expected_height_recipe
         before = expected_height_recipe(before, target_height)
+    if waist_yaw_range is not None:
+        from tools.waist_yaw_training import expected_waist_yaw_recipe
+        before = expected_waist_yaw_recipe(before, waist_yaw_range, waist_yaw_curriculum_start,
+                                           waist_yaw_curriculum_updates)
     if curriculum_stage is not None:
         from tools.teleop_curriculum import expected_recipe
         before = expected_recipe(before, curriculum_stage)
@@ -133,7 +152,9 @@ def verify_recipe(source_run, resumed_run, target_height=None, curriculum_stage=
 
 
 def record_resume(runner, checkpoint, run, target_height=None, curriculum_stage=None,
-                  disable_symmetry=False, mode='dynamics',ik_bank=None):
+                  disable_symmetry=False, mode='dynamics',ik_bank=None, height_range=None,
+                  height_curriculum_start=0, height_curriculum_updates=10000,
+                  waist_yaw_range=None, waist_yaw_curriculum_start=5000, waist_yaw_curriculum_updates=15000):
     checkpoint, run = Path(checkpoint), Path(run)
     source = torch.load(checkpoint, map_location='cpu', weights_only=False)
     restored = dict(model_state_dict=runner.alg.policy.state_dict(),
@@ -149,7 +170,11 @@ def record_resume(runner, checkpoint, run, target_height=None, curriculum_stage=
                         auxiliary_cfg=runner.alg.auxiliary_cfg)
     count = audit_restored(source, restored, runner.alg.learning_rate, mode)
     recipe_hash = verify_recipe(checkpoint.parent, run, target_height=target_height,
-                                curriculum_stage=curriculum_stage, disable_symmetry=disable_symmetry,ik_bank=ik_bank)
+                                curriculum_stage=curriculum_stage, disable_symmetry=disable_symmetry,ik_bank=ik_bank,
+                                height_range=height_range, height_curriculum_start=height_curriculum_start,
+                                height_curriculum_updates=height_curriculum_updates,
+                                waist_yaw_range=waist_yaw_range, waist_yaw_curriculum_start=waist_yaw_curriculum_start,
+                                waist_yaw_curriculum_updates=waist_yaw_curriculum_updates)
     # Checkpoints store the last completed zero-based iteration.
     runner.current_learning_iteration = count
     if hasattr(runner.env, 'set_training_iteration'):
@@ -169,6 +194,16 @@ def record_resume(runner, checkpoint, run, target_height=None, curriculum_stage=
                     learning_rate=runner.alg.learning_rate, environment_sha256=recipe_hash,
                     simulator_state_restored=False,
                     initial_checkpoint=str((run/'resume_initial_policy.pt').resolve()))
+    if height_range is not None:
+        evidence['height_range_change'] = dict(range_m=list(height_range),
+            curriculum_start=height_curriculum_start, curriculum_updates=height_curriculum_updates,
+            only_declared_height_sampling_fields_changed=True, rewards_unchanged=True,
+            policy_and_both_optimizers_preserved=True)
+    if waist_yaw_range is not None:
+        evidence['waist_yaw_change'] = dict(range_rad=list(waist_yaw_range),
+            curriculum_start=waist_yaw_curriculum_start, curriculum_updates=waist_yaw_curriculum_updates,
+            only_declared_waist_yaw_sampling_fields_changed=True, rewards_unchanged=True,
+            policy_and_both_optimizers_preserved=True)
     if disable_symmetry:
         if runner.alg.symmetry is not None:
             raise ValueError('Symmetry must be fully disabled in the live PPO instance')

@@ -58,6 +58,12 @@ parser.add_argument('--teleop_standing_fraction', type=float, default=.8,
                     help='Standing probability; remaining commands split forward/back:lateral:turning = 2:1:1.')
 parser.add_argument('--pelvis_height', type=float, default=None,
                     help='Explicit fixed-height recipe; permit only this height change during audited dynamics resume.')
+parser.add_argument('--pelvis_height_range', type=float, nargs=2, metavar=('MIN', 'MAX'))
+parser.add_argument('--height_curriculum_start', type=int, default=None)
+parser.add_argument('--height_curriculum_updates', type=int, default=10000)
+parser.add_argument('--waist_yaw_range', type=float, nargs=2, metavar=('MIN', 'MAX'))
+parser.add_argument('--waist_yaw_curriculum_start', type=int, default=5000)
+parser.add_argument('--waist_yaw_curriculum_updates', type=int, default=15000)
 parser.add_argument('--teleop_curriculum_stage', default=None,
                     help='Fixed performance-gated teleop difficulty; fresh runs start at quiet.')
 parser.add_argument('--teleop_curriculum_decision', type=Path, default=None,
@@ -99,6 +105,19 @@ if args_cli.teleop_curriculum_stage is not None:
         parser.error('Gated curriculum requires an explicit fresh start or audited resume')
 elif args_cli.teleop_curriculum_decision is not None:
     parser.error('--teleop_curriculum_decision requires --teleop_curriculum_stage')
+if args_cli.pelvis_height_range is not None:
+    from tools.fixed_pelvis_height import validate_height_range
+    validate_height_range(args_cli.pelvis_height_range)
+    if args_cli.task != 'walk_elf3_tang_bxi_robust' or args_cli.pelvis_height is not None or args_cli.teleop_curriculum_stage:
+        parser.error('Variable height requires robust task without fixed-height or teleop-stage overrides')
+    if args_cli.height_curriculum_updates <= 0:
+        parser.error('Height curriculum updates must be positive')
+if args_cli.waist_yaw_range is not None:
+    from tools.waist_yaw_training import waist_yaw_fields
+    waist_yaw_fields(args_cli.waist_yaw_range, args_cli.waist_yaw_curriculum_start,
+                     args_cli.waist_yaw_curriculum_updates)
+    if args_cli.task != 'walk_elf3_tang_bxi_robust' or args_cli.teleop_curriculum_stage:
+        parser.error('Waist yaw curriculum requires robust task without gated teleop stages')
 if args_cli.pelvis_height is not None:
     from tools.fixed_pelvis_height import validate_height
     validate_height(args_cli.pelvis_height)
@@ -197,6 +216,19 @@ def train():
         configure_fixed_height(env_cfg, args_cli.pelvis_height)
         if teleop_recipe is not None:
             teleop_recipe['pelvis_height'] = args_cli.pelvis_height
+    height_recipe = None
+    if args_cli.pelvis_height_range is not None:
+        from tools.fixed_pelvis_height import configure_height_range
+        if args_cli.height_curriculum_start is None:
+            args_cli.height_curriculum_start = (int(torch.load(resume_path, map_location='cpu',
+                weights_only=False)['iter'])+1 if resume_path else 0)
+        height_recipe = configure_height_range(env_cfg, args_cli.pelvis_height_range,
+            args_cli.height_curriculum_start, args_cli.height_curriculum_updates)
+    waist_yaw_recipe = None
+    if args_cli.waist_yaw_range is not None:
+        from tools.waist_yaw_training import configure_waist_yaw
+        waist_yaw_recipe = configure_waist_yaw(env_cfg, args_cli.waist_yaw_range,
+            args_cli.waist_yaw_curriculum_start, args_cli.waist_yaw_curriculum_updates)
     if args_cli.auxiliary_supervision is not None:
         env_cfg.auxiliary_supervision = args_cli.auxiliary_supervision != 'control'
         if args_cli.auxiliary_supervision != 'control':
@@ -255,7 +287,12 @@ def train():
         env_cfg.scene.seed = seed
         agent_cfg.seed = seed
 
+    # The current recipe keeps waist commands neutral and verifies ankle solver limits.
+    from legged_lab.assets.elf3_bxi_31.ankle_limits import verify_neutral_waist, verify_simulator_limits
+    verify_neutral_waist(env_cfg.commands)
     env = env_class(env_cfg, args_cli.headless)
+    ankle_limits = verify_simulator_limits(env.robot)
+    print('[ANKLE_VELOCITY_LIMITS_RAD_S]', ankle_limits, flush=True)
 
     print(f"[INFO] Logging experiment in directory: {log_root_path}")
 
@@ -283,6 +320,14 @@ def train():
 
     dump_yaml(os.path.join(log_dir, "params", "env.yaml"), env_cfg)
     dump_yaml(os.path.join(log_dir, "params", "agent.yaml"), agent_cfg)
+    if height_recipe is not None:
+        import json
+        (Path(log_dir)/'height_commands.json').write_text(json.dumps(height_recipe, indent=2)+'\n')
+        print('[HEIGHT_COMMANDS]', json.dumps(height_recipe), flush=True)
+    if waist_yaw_recipe is not None:
+        import json
+        (Path(log_dir)/'waist_yaw_commands.json').write_text(json.dumps(waist_yaw_recipe, indent=2)+'\n')
+        print('[WAIST_YAW_COMMANDS]', json.dumps(waist_yaw_recipe), flush=True)
     if liftoff_recipe is not None:
         import json
         with open(os.path.join(log_dir, 'liftoff_rewards.json'), 'w') as stream:
@@ -304,7 +349,13 @@ def train():
         evidence = record_resume(runner, resume_path, log_dir, target_height=args_cli.pelvis_height,
                                  curriculum_stage=args_cli.teleop_curriculum_stage,
                                  disable_symmetry=args_cli.disable_symmetry_on_resume,
-                                 mode=args_cli.auxiliary_supervision,ik_bank=args_cli.ik_arm_bank)
+                                 mode=args_cli.auxiliary_supervision,ik_bank=args_cli.ik_arm_bank,
+                                 height_range=args_cli.pelvis_height_range,
+                                 height_curriculum_start=args_cli.height_curriculum_start or 0,
+                                 height_curriculum_updates=args_cli.height_curriculum_updates,
+                                 waist_yaw_range=args_cli.waist_yaw_range,
+                                 waist_yaw_curriculum_start=args_cli.waist_yaw_curriculum_start,
+                                 waist_yaw_curriculum_updates=args_cli.waist_yaw_curriculum_updates)
         print('[AUXILIARY_RESUME]', json.dumps(evidence), flush=True)
     if args_cli.auxiliary_supervision is not None:
         import hashlib

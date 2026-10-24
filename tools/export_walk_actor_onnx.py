@@ -42,12 +42,22 @@ def main():
         torch.onnx.export(actor, torch.zeros(1, 840), str(temporary), input_names=['obs'],
                           output_names=['actions'], opset_version=11, dynamo=False)
     model = onnx.load(temporary)
-    from fixed_pelvis_height import checkpoint_height
+    from fixed_pelvis_height import checkpoint_height, checkpoint_height_range
     height = checkpoint_height(source, require_fixed=False)
+    height_range = checkpoint_height_range(source)
+    env_config = yaml.load((source.parent/'params/env.yaml').read_text(), Loader=yaml.BaseLoader)
+    height_rate = float(env_config['commands']['height_rate'])
+    waist_yaw_range = tuple(map(float, env_config['commands']['waist_yaw_range']))
+    waist_yaw_rate = float(env_config['commands']['waist_yaw_rate'])
     for key, value in {'checkpoint': str(source), 'checkpoint_sha256': digest,
                        'history_frames': '10', 'frame_observation_size': '84',
                        'history_order': 'oldest_first', 'control_hz': '50',
-                       'actor_frame': 'waist_z_link', 'height_command': str(height)}.items():
+                       'actor_frame': 'waist_z_link', 'height_command': str(height),
+                       'height_command_range': json.dumps(height_range),
+                       'height_rate_m_s': str(height_rate),
+                       'waist_yaw_command_range': json.dumps(waist_yaw_range),
+                       'waist_yaw_rate_rad_s': str(waist_yaw_rate),
+                       'waist_yaw_frame': 'torso_relative_to_pelvis'}.items():
         entry = model.metadata_props.add()
         entry.key, entry.value = key, value
     onnx.checker.check_model(model)
@@ -73,6 +83,8 @@ def main():
               'onnx_sha256': hashlib.sha256(args.output.read_bytes()).hexdigest(),
               'input_shape': [1, 840], 'output_shape': [1, 15],
               'height_command': height,
+              'height_command_range': height_range, 'height_rate_m_s': height_rate,
+              'waist_yaw_command_range': waist_yaw_range, 'waist_yaw_rate_rad_s': waist_yaw_rate,
               'comparison_samples': 32, 'max_absolute_error': maximum, 'passed': True}
     args.output.with_suffix('.export.json').write_text(json.dumps(report, indent=2)+'\n')
     print(json.dumps(report), flush=True)

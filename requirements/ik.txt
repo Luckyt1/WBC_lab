@@ -1,10 +1,10 @@
 # Dedicated Python 3.11 environment; install CPU PyTorch separately.
 # Pinocchio's PyPI distribution is named "pin", not "pinocchio".
 pin==4.1.0
-numpy>=2,<3
-scipy>=1.15
-mujoco>=3.3,<4
-onnx>=1.17
-onnxruntime>=1.20
-PyYAML>=6
-pytest>=8
+numpy==2.4.6
+scipy==1.17.1
+mujoco==3.14.0
+onnx==1.21.0
+onnxruntime==1.30.0
+PyYAML==6.0.3
+pytest>=8,<10

@@ -32,6 +32,12 @@ def main():
                         help='Standing-first arm-motion recipe, including the position penalty.')
     parser.add_argument('--teleop_standing_fraction', type=float, default=.8)
     parser.add_argument('--pelvis_height', type=float, default=None)
+    parser.add_argument('--pelvis_height_range', type=float, nargs=2, metavar=('MIN', 'MAX'))
+    parser.add_argument('--height_curriculum_start', type=int)
+    parser.add_argument('--height_curriculum_updates', type=int, default=10000)
+    parser.add_argument('--waist_yaw_range', type=float, nargs=2, metavar=('MIN', 'MAX'))
+    parser.add_argument('--waist_yaw_curriculum_start', type=int, default=5000)
+    parser.add_argument('--waist_yaw_curriculum_updates', type=int, default=15000)
     parser.add_argument('--elf3_symmetry', action='store_true')
     parser.add_argument('--liftoff_rewards', action='store_true')
     parser.add_argument('--ik_arm_bank', type=Path)
@@ -69,11 +75,24 @@ def main():
             parser.error('Curriculum chunks require dynamics/control, teleop standing and external evaluation')
     elif args.external_evaluation or args.teleop_curriculum_decision:
         parser.error('External evaluation/decision is only for a teleop curriculum chunk')
+    if args.pelvis_height_range is not None:
+        from fixed_pelvis_height import validate_height_range
+        validate_height_range(args.pelvis_height_range)
+        if args.task != 'walk_elf3_tang_bxi_robust' or args.pelvis_height is not None or args.teleop_curriculum_stage:
+            parser.error('Variable height requires robust task without fixed-height or teleop-stage overrides')
+        if args.height_curriculum_updates <= 0:
+            parser.error('Height curriculum updates must be positive')
     if args.pelvis_height is not None:
         from fixed_pelvis_height import validate_height
         validate_height(args.pelvis_height)
         if args.task != 'walk_elf3_tang_bxi_robust':
             parser.error('--pelvis_height requires the robust task')
+    if args.waist_yaw_range is not None:
+        from waist_yaw_training import waist_yaw_fields
+        waist_yaw_fields(args.waist_yaw_range, args.waist_yaw_curriculum_start,
+                         args.waist_yaw_curriculum_updates)
+        if args.task != 'walk_elf3_tang_bxi_robust' or args.teleop_curriculum_stage:
+            parser.error('Waist yaw curriculum requires robust task without gated teleop stages')
     if args.teleop_standing and args.task != 'walk_elf3_tang_bxi_robust':
         parser.error('--teleop_standing requires walk_elf3_tang_bxi_robust')
     if auxiliary and (args.task != 'walk_elf3_tang_bxi_robust' or not args.deployment_python):
@@ -95,6 +114,14 @@ def main():
         from audit_auxiliary_resume import completed_updates
         start_iteration = completed_updates(torch.load(checkpoint_source, map_location='cpu', weights_only=False),
                                             args.auxiliary_supervision)
+    if args.pelvis_height_range is not None and args.height_curriculum_start is None:
+        args.height_curriculum_start = start_iteration
+        if checkpoint_source:
+            import yaml
+            prior = yaml.load((checkpoint_source.parent/'params/env.yaml').read_text(), Loader=yaml.BaseLoader)['commands']
+            if prior.get('height_sampling_all_modes') == 'true':
+                args.height_curriculum_start = int(prior['pose_start_iteration'])
+                args.height_curriculum_updates = int(prior['pose_end_iteration'])-args.height_curriculum_start
     std_bounds = (.05, .30) if args.task.endswith('_still') else (.1, .6)
     out = Path(args.output).resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -181,6 +208,20 @@ def main():
     if args.pelvis_height is not None:
         state['pelvis_height'] = args.pelvis_height
         state['commands'] = state['commands'].replace('.8235m', f'{args.pelvis_height}m')
+    if args.pelvis_height_range is not None:
+        state.update(pelvis_height_range=args.pelvis_height_range,
+                     height_curriculum_start=args.height_curriculum_start,
+                     height_curriculum_updates=args.height_curriculum_updates)
+        state['commands'] = state['commands'].replace('fixed height .8235m', 'height .8235m').replace('height .8235m',
+            f'height {args.pelvis_height_range}m; all velocity modes; 25% nominal; 0.12m/s transitions')
+        state['evaluation_scope'] += '; lower and middle height standing/forward/backward/lateral/turning scenarios'
+    if args.waist_yaw_range is not None:
+        state.update(waist_yaw_range=args.waist_yaw_range,
+                     waist_yaw_curriculum_start=args.waist_yaw_curriculum_start,
+                     waist_yaw_curriculum_updates=args.waist_yaw_curriculum_updates)
+        state['commands'] = state['commands'].replace('waist yaw 0',
+            f'waist yaw {args.waist_yaw_range}rad; 25% neutral; independent of velocity/height; 0.4rad/s transitions')
+        state['evaluation_scope'] += '; both waist yaw signs at low/mid/high heights, standing/forward/lateral/turning; pose-tracking gates'
     if args.teleop_curriculum_stage is not None:
         from teleop_curriculum import settings
         state['teleop_curriculum_stage'] = args.teleop_curriculum_stage
@@ -214,6 +255,14 @@ def main():
         argv += ['--teleop_standing', '--teleop_standing_fraction', str(args.teleop_standing_fraction)]
     if args.pelvis_height is not None:
         argv += ['--pelvis_height', str(args.pelvis_height)]
+    if args.pelvis_height_range is not None:
+        argv += ['--pelvis_height_range', *map(str, args.pelvis_height_range),
+                 '--height_curriculum_start', str(args.height_curriculum_start),
+                 '--height_curriculum_updates', str(args.height_curriculum_updates)]
+    if args.waist_yaw_range is not None:
+        argv += ['--waist_yaw_range', *map(str, args.waist_yaw_range),
+                 '--waist_yaw_curriculum_start', str(args.waist_yaw_curriculum_start),
+                 '--waist_yaw_curriculum_updates', str(args.waist_yaw_curriculum_updates)]
     if args.elf3_symmetry:
         argv += ['--elf3_symmetry']
     if args.liftoff_rewards:

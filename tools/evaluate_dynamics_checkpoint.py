@@ -42,6 +42,8 @@ def main():
     report=read(out/'report.json')
     assert report['checkpoint_sha256']==checked['sha256']
     gates=evaluate_gates(report)
+    from waist_yaw_training import evaluate_waist_yaw
+    waist_yaw_gates=evaluate_waist_yaw(report)
     standing=read(out/'mujoco_standing.json')
     gait=analyze(out)
     write(out/'isaac_gait.json',gait)
@@ -67,7 +69,8 @@ def main():
         ik_report = read(out/'ik_workspace/report.json')['summary']
     write(out/'summary.json',dict(checkpoint=str(args.checkpoint.resolve()),health=checked,
           completed_at=now(),gates=gates,original_gates_passed=gates['passed'] and standing['passed'],
-          mixed_yaw_gates=mixed,standing=standing,isaac_forward=gait['profiles']['bootstrap']['scenarios']['forward_030'],
+          mixed_yaw_gates=mixed,waist_yaw_gates=waist_yaw_gates,
+          standing=standing,isaac_forward=gait['profiles']['bootstrap']['scenarios']['forward_030'],
           mujoco_forward=mj['forward'],mujoco_fast=mj['fast'],mujoco_zero=mj['zero'],mujoco_walk_stop=mj['walk_stop'],
           mujoco_terrain=mj_report.get('terrain', {'mode':'legacy/unrecorded'}),
           report_dir=str(out),auxiliary_prediction_report=str(out/'auxiliary_prediction.json'),
@@ -88,8 +91,16 @@ def write_comparison(out,state):
               if continuation else '只训练 dynamics；原 control/state 文件保留。初始策略随机、优化器为空，没有继承旧训练权重。')
     if state.get('pelvis_height') is not None:
         method += f" 本段目标骨盆高度为 {state['pelvis_height']} m；评估采用相同高度指令。"
+    if state.get('pelvis_height_range') is not None:
+        method += (f" 本段骨盆高度范围 {state['pelvis_height_range']} m；高度课程从第 "
+                   f"{state['height_curriculum_start']} 次更新开始，在 {state['height_curriculum_updates']} 次更新内展开。"
+                   '奖励保持原样；额外测试低高度与中间高度下的站立及各方向行走。')
     if state.get('teleop_curriculum_stage'):
         method += f" 本段课程固定为 {state['teleop_curriculum_stage']}；外部课程控制器在本段结束后串行评估，并决定留级、升阶或回退难度。"
+    if state.get('waist_yaw_range'):
+        method += (f" 腰部相对骨盆 yaw 范围 {state['waist_yaw_range']} rad，从第 "
+                   f"{state['waist_yaw_curriculum_start']} 轮开始在 {state['waist_yaw_curriculum_updates']} 轮内展开，"
+                   '25% 回正，转速限制 0.4 rad/s；各高度和运动模式均覆盖，奖励保持原样。')
     lines=[f"# {title}",'',
            f"状态：`{state['status']}`；最近更新：{state['updated_at']}。",
            f"本段已记录更新：{state['completed_updates']:,} / {state['planned_updates']:,}；累计 {state['initial_iteration'] + state['completed_updates']:,} / {target:,}。",'',
@@ -124,6 +135,19 @@ def write_comparison(out,state):
             if ik:
                 a,b = ik['unseen'],ik['regression']
                 lines.append(f"| {row['health']['iteration']} | {a['passed']}/{a['trials']} | {b['passed']}/{b['trials']} |")
+    if state.get('waist_yaw_range'):
+        lines += ['', '## 腰部 yaw 跟踪', '',
+                  '低、中、高站高 × 站立/前进/侧移/转向 × 左右扭腰，共 24 个 Isaac 场景。',
+                  '每场景 32 次，三档扰动；腰 yaw MAE ≤ 0.10 rad、高度 MAE ≤ 0.03 m，且满足速度及存活门槛。',
+                  '站立扭腰额外要求 vx/vy/wz MAE ≤ 0.02/0.02/0.10、单脚支撑占比 ≤ 10%。', '',
+                  '| 检查点 | bootstrap | controlled_arms_on | training_disturbances |',
+                  '|---|---|---|---|']
+        for row in state['evaluations']:
+            gate = row.get('waist_yaw_gates')
+            if gate:
+                values = ['通过' if gate['profiles'][p]['passed'] else '未通过'
+                          for p in ('bootstrap', 'controlled_arms_on', 'training_disturbances')]
+                lines.append(f"| {row['health']['iteration']} | {' | '.join(values)} |")
     (out/'RESULTS.md').write_text('\n'.join(lines))
 
 

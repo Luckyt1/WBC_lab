@@ -96,6 +96,15 @@ def test_onnx_height_reaches_simulator_observation_config_and_legacy_retains_def
     assert policy.info==dict(height_command=.78,waist_yaw_command=0.)
 
 
-@pytest.mark.parametrize('height',[0.,-.78,.9,float('nan'),float('inf')])
+@pytest.mark.parametrize('height',[0.,-.78,.399,.9,float('nan'),float('inf')])
 def test_invalid_height_rejected(height):
     with pytest.raises(ValueError): validate_height(height)
+
+
+def test_deep_height_export_metadata_can_reach_inference_without_clamping(tmp_path):
+    import onnx
+    model=onnx.helper.make_model(onnx.helper.make_graph([], 'height040', [], []))
+    entry=model.metadata_props.add();entry.key='height_command';entry.value='0.4'
+    path=tmp_path/'model.onnx';onnx.save(model,path)
+    policy=NS(info=dict(height_command=.8,waist_yaw_command=0.))
+    assert apply_onnx_height(policy,path) == .4

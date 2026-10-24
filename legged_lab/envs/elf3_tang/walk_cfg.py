@@ -48,7 +48,7 @@ from legged_lab.envs.elf3_tang.commands import TangCommandCfg
 from legged_lab.envs.elf3_tang import rewards as tang_rewards
 from legged_lab.envs.elf3_tang.wbc.reward_cfg import WBCRewardCfg
 from pathlib import Path
-from legged_lab.paths import amass_root
+from legged_lab.paths import amass_root, robot_asset_dir
 
 
 @configclass
@@ -306,15 +306,8 @@ class LiteRewardCfg:
 
 @configclass
 class Elf3WalkTangFlatEnvCfg:
-    amp_motion_files_display = [
-                                # "legged_lab/envs/elf3/datasets/motion_visualization/stand.txt",
-                                "legged_lab/envs/elf3/datasets/motion_visualization/stand_back.txt",
-                                # "legged_lab/envs/elf3/datasets/motion_visualization/walk_run.txt",
-                                # "legged_lab/envs/elf3/datasets/motion_visualization/walk_around.txt",
-                                "legged_lab/envs/elf3/datasets/motion_visualization/walk_left.txt",
-                                "legged_lab/envs/elf3/datasets/motion_visualization/walk_right.txt",
-                                # "legged_lab/envs/elf3/datasets/motion_visualization/walk.txt",
-                                ]
+    amp_motion_files_display = [str(robot_asset_dir() / 'motion_visualization' / name)
+                               for name in ('stand_back.txt', 'walk_left.txt', 'walk_right.txt')]
     device: str = "cuda:0"
     scene: BaseSceneCfg = BaseSceneCfg(
         max_episode_length_s=20.0,

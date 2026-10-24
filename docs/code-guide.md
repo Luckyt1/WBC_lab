@@ -1,5 +1,7 @@
 # 训练与评估代码
 
+当前默认配方为 `configs/current.json`，启动使用 `./deploy.sh train`。导出使用 `./deploy.sh export --checkpoint /path/to/RUN/model_25000.pt --output output/policy.onnx`。下文直接调用工具时，先从仓库根目录导出 `.env` 中的变量（`set -a; source .env; set +a`）；默认资源路径见 `.env.example`。
+
 ## 控制分工
 
 `elf3_env.py` 将腰腿动作交给 PPO，将上肢参考交给独立执行器。

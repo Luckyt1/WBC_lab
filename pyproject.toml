@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "elf3-ik-robust"
-version = "0.1.0"
+version = "0.2.0"
 description = "ELF3 humanoid PPO training with IK arm disturbance, symmetry and auxiliary dynamics supervision"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.12"
 license = {file = "LICENSE"}
 dependencies = [
   "numpy>=1.26,<2", "PyYAML>=6", "scipy>=1.11", "tensorboard>=2.16",

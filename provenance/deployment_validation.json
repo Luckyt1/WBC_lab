@@ -1,0 +1,235 @@
+{
+  "checked_at": "2026-10-25T01:24:08.944439+08:00",
+  "archived_source_files_verified": 261,
+  "python_syntax_files": 214,
+  "cpu_tests": {
+    "main_passed": 327,
+    "main_skipped": 2,
+    "mujoco_dedicated_passed": 3,
+    "ik_dedicated_passed": 10,
+    "entrypoints_and_ankles_rechecked_passed": 28,
+    "note": "Dedicated suites include all previously skipped checks; some tests overlap main suite."
+  },
+  "native_build": "passed",
+  "environment_check": {
+    "checked_at": "2026-10-25T01:20:08.427363+08:00",
+    "root": "/home/cheng/elf3_lab/github/WBC_lab",
+    "checks": [
+      {
+        "name": "resources",
+        "passed": true
+      },
+      {
+        "name": "train",
+        "passed": true,
+        "detail": "CUDA: NVIDIA GeForce RTX 4090 | torch: 2.7.0+cu128 | RSL: /home/cheng/elf3_lab/github/WBC_lab/rsl_rl/rsl_rl/__init__.py"
+      },
+      {
+        "name": "eval",
+        "passed": true,
+        "detail": "MuJoCo: 3.14.0 | model joints: 32"
+      },
+      {
+        "name": "ik",
+        "passed": true,
+        "detail": "Pinocchio: 4.1.0 | IK nq: 31"
+      }
+    ],
+    "errors": [],
+    "passed": true
+  },
+  "usd_asset_verification": {
+    "status": "PASS",
+    "joints": 31,
+    "bodies": 32,
+    "mass_kg": 43.22247590869665,
+    "max_mass_error_kg": 3.052807624470688e-07,
+    "max_com_error_m": 6.532745372433979e-09,
+    "max_inertia_error": 9.51249812253252e-09,
+    "collision_bodies": [
+      "head_y_link",
+      "head_z_link",
+      "l_ankle_x_link",
+      "l_hip_y_link",
+      "l_hip_z_link",
+      "l_shoulder_z_link",
+      "l_wrist_x_link",
+      "l_wrist_y_link",
+      "l_wrist_z_link",
+      "r_ankle_x_link",
+      "r_hip_y_link",
+      "r_hip_z_link",
+      "r_shoulder_z_link",
+      "r_wrist_x_link",
+      "r_wrist_y_link",
+      "r_wrist_z_link",
+      "torso_link"
+    ],
+    "usd_layers": 6,
+    "builtin_dependencies": [
+      "OmniPBR.mdl"
+    ],
+    "effort_source": "deployment",
+    "legacy": null
+  },
+  "gpu_smoke": {
+    "passed": true,
+    "returncode": 0,
+    "command": [
+      "/home/cheng/miniconda3/envs/isaac_wbc/bin/python",
+      "-u",
+      "legged_lab/scripts/train.py",
+      "--auxiliary_supervision",
+      "dynamics",
+      "--elf3_symmetry",
+      "--height_curriculum_start",
+      "0",
+      "--height_curriculum_updates",
+      "20000",
+      "--liftoff_rewards",
+      "--max_iterations",
+      "2",
+      "--num_envs",
+      "16",
+      "--pelvis_height_range",
+      "0.4",
+      "0.8",
+      "--save_interval",
+      "1",
+      "--task",
+      "walk_elf3_tang_bxi_robust",
+      "--teleop_standing",
+      "--teleop_standing_fraction",
+      "0.5",
+      "--seed",
+      "42",
+      "--headless",
+      "--device",
+      "cuda:0",
+      "--logger",
+      "tensorboard",
+      "--run_name",
+      "deployment_smoke_v2_20261025",
+      "--experiment_name",
+      "deployment_smoke",
+      "--from_scratch",
+      "--ik_arm_bank",
+      "/home/cheng/elf3_lab/github/WBC_lab/resources/ik_bank_v3"
+    ],
+    "log": "/home/cheng/elf3_lab/github/WBC_lab/logs/deployment_smoke_v2_20261025/train.log",
+    "run_dir": "/home/cheng/elf3_lab/github/WBC_lab/logs/deployment_smoke/2026-10-25_01-18-52_deployment_smoke_v2_20261025",
+    "checkpoint_health": {
+      "iteration": 1,
+      "sha256": "7e436209178751b10dc72d1da463aceb63bf31bca80c1d42dffe4ced5fce2dac",
+      "finite": true,
+      "optimizer_state_entries": 17,
+      "learning_rate": 1e-05,
+      "std_min": 0.49812451004981995,
+      "std_max": 0.5015589594841003
+    }
+  },
+  "ankle_physx_readback_rad_s": {
+    "l_ankle_x_joint": 5.0,
+    "r_ankle_x_joint": 5.0,
+    "l_ankle_y_joint": 15.0,
+    "r_ankle_y_joint": 15.0
+  },
+  "onnx_export": {
+    "checkpoint": "/home/cheng/elf3_lab/github/WBC_lab/logs/deployment_smoke/2026-10-25_01-18-52_deployment_smoke_v2_20261025/model_1.pt",
+    "checkpoint_sha256": "7e436209178751b10dc72d1da463aceb63bf31bca80c1d42dffe4ced5fce2dac",
+    "iteration": 1,
+    "onnx": "/home/cheng/elf3_lab/github/WBC_lab/logs/deployment_smoke_v2_20261025/policy.onnx",
+    "onnx_sha256": "945f1d827d2a80996c5e05d14f45924f38e32c13d67618583f77caf3482f78a9",
+    "input_shape": [
+      1,
+      840
+    ],
+    "output_shape": [
+      1,
+      15
+    ],
+    "height_command": 0.8,
+    "height_command_range": [
+      0.4,
+      0.8
+    ],
+    "height_rate_m_s": 0.12,
+    "waist_yaw_command_range": [
+      0.0,
+      0.0
+    ],
+    "waist_yaw_rate_rad_s": 0.4,
+    "comparison_samples": 32,
+    "max_absolute_error": 8.344650268554688e-07,
+    "passed": true
+  },
+  "mujoco_inference": {
+    "passed": true,
+    "elapsed_simulation_s": 0.5000000000000003,
+    "observation_shape": [
+      1,
+      840
+    ],
+    "scope": "Loading and inference only; untrained policy, no locomotion quality claim"
+  },
+  "relocation_smoke": {
+    "passed": true,
+    "returncode": 0,
+    "command": [
+      "/home/cheng/miniconda3/envs/isaac_wbc/bin/python",
+      "-u",
+      "legged_lab/scripts/train.py",
+      "--auxiliary_supervision",
+      "dynamics",
+      "--elf3_symmetry",
+      "--height_curriculum_start",
+      "0",
+      "--height_curriculum_updates",
+      "20000",
+      "--liftoff_rewards",
+      "--max_iterations",
+      "2",
+      "--num_envs",
+      "16",
+      "--pelvis_height_range",
+      "0.4",
+      "0.8",
+      "--save_interval",
+      "1",
+      "--task",
+      "walk_elf3_tang_bxi_robust",
+      "--teleop_standing",
+      "--teleop_standing_fraction",
+      "0.5",
+      "--seed",
+      "42",
+      "--headless",
+      "--device",
+      "cuda:0",
+      "--logger",
+      "tensorboard",
+      "--run_name",
+      "relocation_smoke",
+      "--experiment_name",
+      "deployment_smoke",
+      "--from_scratch",
+      "--ik_arm_bank",
+      "/tmp/wbc deployment verification 20261025/WBC_lab/resources/ik_bank_v3"
+    ],
+    "log": "/tmp/wbc deployment verification 20261025/WBC_lab/logs/relocation_smoke/train.log",
+    "run_dir": "/tmp/wbc deployment verification 20261025/WBC_lab/logs/deployment_smoke/2026-10-25_01-23-08_relocation_smoke",
+    "checkpoint_health": {
+      "iteration": 1,
+      "sha256": "7e436209178751b10dc72d1da463aceb63bf31bca80c1d42dffe4ced5fce2dac",
+      "finite": true,
+      "optimizer_state_entries": 17,
+      "learning_rate": 1e-05,
+      "std_min": 0.49812451004981995,
+      "std_max": 0.5015589594841003
+    }
+  },
+  "relocated_checkpoint_identical": true,
+  "clean_machine_sdk_installation_tested": false,
+  "long_training_restarted": false,
+  "scope": "Source and resources, reused working SDK; actual GPU initialization/two PPO updates and short CPU inference. Not a policy quality assessment."
+}

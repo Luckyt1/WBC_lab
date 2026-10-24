@@ -1,0 +1,5 @@
+torch==2.7.0
+torchvision==0.22.0
+numpy==1.26.0
+isaaclab==2.2.0
+isaacsim==5.0.0.0

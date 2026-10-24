@@ -6,6 +6,7 @@ it is not a continuous-time or arbitrary-disturbance safety guarantee.
 """
 import numpy as np
 import torch
+import warnings
 from .arm_guard import arm_frames, rotate, quat_mul, inverse
 from .arm_pose_tracker import rotation_error
 
@@ -33,6 +34,7 @@ class PredictiveArmExecutor:
             if bid in guard.body_ids: self.obstacle_arm.append((guard.body_ids.index(bid),a))
         self.dynamic=torch.tensor([body_names[i]!='torso_link' for i in guard.body_ids],device=self.device)
         self.metrics={}
+        self.solver_brake_total=0
 
     def reset(self,ids,actual):
         indices=ids.detach().cpu().numpy()
@@ -40,9 +42,34 @@ class PredictiveArmExecutor:
         self.fresh[ids]=True
 
     def _calculate(self,state,goal,brake=False):
+        if not np.isfinite(state).all() or not np.isfinite(goal).all():
+            raise RuntimeError('Arm trajectory solver received non-finite state or goal')
         out,extrema,status=self.native.calculate(state,goal,self.times,self.vmax,self.amax,self.jmax,brake,4)
-        if np.any(status<0):
-            raise RuntimeError(f'Arm trajectory solver failed: {np.unique(status).tolist()}')
+        failed=status<0
+        if np.any(failed):
+            # Step-1 position solving can fail for a finite input (-110).
+            # Replan only those rows in velocity mode, to a smooth stop from
+            # their original p/v/a. Never accept the native error placeholder,
+            # freeze a moving state, or relax derivative/collision limits.
+            if brake or np.any(status[failed]!=-110):
+                raise RuntimeError(f'Arm trajectory solver failed: {np.unique(status).tolist()}')
+            stop,stop_ext,stop_status=self.native.calculate(
+                state[failed],goal[failed],self.times,self.vmax,self.amax,self.jmax,True,4)
+            valid=(np.all(stop_status>=0) and np.isfinite(stop).all() and np.isfinite(stop_ext).all()
+                   and np.abs(stop[:,:,1]).max()<=self.vmax+1e-8
+                   and np.abs(stop[:,:,2]).max()<=self.amax+1e-8
+                   and np.abs(stop[:,0,2]-state[failed,2]).max()<=self.jmax*self.dt+1e-8)
+            if not valid:
+                raise RuntimeError(f'Arm trajectory brake fallback failed or exceeded limits: {np.unique(stop_status).tolist()}')
+            if self.solver_brake_total==0:
+                first=np.flatnonzero(failed)[0]
+                warnings.warn('Arm position solver returned -110; using bounded braking and existing collision checks. '
+                              f'First input state={state[first].tolist()}, goal={goal[first].tolist()}',
+                              RuntimeWarning,stacklevel=2)
+            self.solver_brake_total+=int(failed.sum())
+            out[failed]=stop;extrema[failed]=stop_ext
+        if not np.isfinite(out).all() or not np.isfinite(extrema).all():
+            raise RuntimeError('Arm trajectory solver returned non-finite output')
         return out,extrema
 
     def _clearance(self,preview,centers,rotations,linear,angular,actual,per_horizon=False):
@@ -74,6 +101,7 @@ class PredictiveArmExecutor:
     @torch.no_grad()
     def project(self,desired,actual,body_pos,body_quat,torso_id):
         g=self.guard;n=len(desired)
+        previous_solver_brakes=self.solver_brake_total
         limits=g.limits.reshape(-1,14,2).expand(n,-1,-1)
         goal=desired.clamp(limits[...,0],limits[...,1]).detach().cpu().numpy().astype(np.float64)
         centers,rotations=g.obstacle_frames(body_pos,body_quat,torso_id)
@@ -138,6 +166,8 @@ class PredictiveArmExecutor:
             'ArmGuard/predictive_brake_fraction':blocked.float().mean(),
             'ArmGuard/unresolved_prediction_fraction':unsafe.float().mean(),
             'ArmGuard/outward_recovery_fraction':recovering.float().mean(),
+            'ArmGuard/solver_brake_count':desired.new_tensor(self.solver_brake_total-previous_solver_brakes),
+            'ArmGuard/solver_brake_total':desired.new_tensor(self.solver_brake_total),
             'IK/reference_velocity_max_rad_s':desired.new_tensor(np.abs(self.state[:,1]).max()),
             'IK/reference_acceleration_max_rad_s2':desired.new_tensor(np.abs(self.state[:,2]).max()),
             'IK/reference_jerk_max_rad_s3':desired.new_tensor(jerk)}

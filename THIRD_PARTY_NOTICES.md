@@ -20,3 +20,7 @@ No pretrained policy, AMASS clip, NVIDIA simulator binary, or external BXI runti
 The upstream-derived gravity constants and collision/control metadata are retained
 as model-specific numerical configuration. The root license does not relicense
 the external robot description or upper-body teleoperation project.
+
+## Local deployment resources (2026-10-25)
+
+The git-ignored `resources/` directory in this user's workspace contains copies of their existing robot assets, BXI runtime, pinned IK inputs and retargeted evaluation data. `deploy.sh pack --with-resources` includes those inputs for local machine-to-machine transfer; the default source-only archive and Git repository exclude them. The earlier statements about unbundled inputs refer to the source distribution. These copies retain their original terms; the project license does not relicense them. The bundle manifest records their exact bytes.

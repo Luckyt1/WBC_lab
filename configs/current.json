@@ -1,0 +1,16 @@
+{
+  "description": "2026-10-23 active recipe: no waist yaw/roll/pitch commands; ankle_x max 5 rad/s, ankle_y max 15 rad/s; height 0.4-0.8 m; fresh dynamics PPO + IK v3",
+  "task": "walk_elf3_tang_bxi_robust",
+  "max_iterations": 80000,
+  "num_envs": 12556,
+  "evaluation_interval": 5000,
+  "save_interval": 500,
+  "auxiliary_supervision": "dynamics",
+  "teleop_standing": true,
+  "teleop_standing_fraction": 0.5,
+  "pelvis_height_range": [0.4, 0.8],
+  "height_curriculum_start": 0,
+  "height_curriculum_updates": 20000,
+  "elf3_symmetry": true,
+  "liftoff_rewards": true
+}
