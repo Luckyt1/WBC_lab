@@ -1,4 +1,4 @@
-# WBC_lab · ELF3 IK Robust
+# WBC_lab · ELF3 / GL-165
 
 ELF3 上肢 IK 扰动下的站立与行走 PPO 训练代码，从 `elf3_lab` 的 IK 执行 v3 提取。
 策略控制腰腿 15 个关节，双臂执行程序化 IK 产生的“到达—保持—收回”轨迹。
@@ -8,7 +8,18 @@ ELF3 上肢 IK 扰动下的站立与行走 PPO 训练代码，从 `elf3_lab` 的
 不包含训练日志、预训练权重、完整轨迹库、机器人网格或仿真器。
 本仓库对应 IK 行走抗干扰版本，不包含另外的 `half/elf3_stand` 站立项目。
 
-## 本次提取：2026-10-11
+## 任务入口
+
+| 机器人 | 训练入口 | 使用说明 |
+| --- | --- | --- |
+| GL-165 | `bash scripts/train_gl165.sh` | [资产准备、训练、预览与验证](docs/gl165.md) |
+| ELF3 | `python scripts/train_current.py --output logs/my_run` | 下方 ELF3 配方与[安装说明](docs/installation.md) |
+
+GL-165 的独立任务为 `walk_gl165_wbc`：策略控制腰腿，双臂执行连续 IK 扰动，训练行走与站立抗扰动。
+不追踪腰部姿态或高度；30% 的手臂目标为侧伸动作，20% 为过头顶动作。
+先按 [GL-165 使用说明](docs/gl165.md) 准备外部资产与轨迹库；路径可通过 `.env.example` 中的 `GL165_*` 变量配置。
+
+## ELF3 提取记录：2026-10-11
 
 此副本对应 10 月 10–11 日从 `model_32000.pt` 继续训练的 IK v3 版本。
 训练按用户要求停止于日志迭代 56,296，最后已保存检查点为 56,000；讨论的 45,000 轮模型使用同一套源码与配方。
@@ -19,7 +30,7 @@ ELF3 上肢 IK 扰动下的站立与行走 PPO 训练代码，从 `elf3_lab` 的
 机器可读记录见 [provenance/training_snapshot.json](provenance/training_snapshot.json)。
 源码不包含模型权重、完整轨迹库、训练日志或机器人网格；这些文件仍在原训练目录。
 
-## 默认配方
+## ELF3 默认配方
 
 [configs/ik_v3.json](configs/ik_v3.json) 保存以下启动配置：
 
@@ -127,6 +138,8 @@ configs/                         IK v3 默认训练配方
 scripts/                         启动、资源检查和上游 IK 准备
 legged_lab/envs/elf3_tang/        环境、奖励、IK 轨迹重放、对称性
 legged_lab/envs/elf3_tang/wbc/    腰部补偿、防碰撞、重力补偿、Ruckig 执行
+legged_lab/envs/gl165/           GL-165 环境、奖励、步态、连续 IK 与检查点恢复
+legged_lab/assets/gl165/         GL-165 关节名称、参数来源与 Isaac 资产配置
 rsl_rl/                          PPO 与辅助预测头修改
 tools/                           IK 生成/路径修复、训练监督、导出和评估
 third_party/ruckig/               固定版本 MIT 原生轨迹生成源码
@@ -139,14 +152,14 @@ resources/                       本机外部资源，Git 忽略
 
 ## GitHub 仓库
 
-此源码同步到 [Luckyt1/WBC_lab](https://github.com/Luckyt1/WBC_lab)。获取代码：
+此源码同步到 [Luckyt1/WBC_lab](https://github.com/Luckyt1/WBC_lab)。获取包含 GL-165 的 `jili165` 分支：
 
 ```bash
-git clone https://github.com/Luckyt1/WBC_lab.git
+git clone --branch jili165 https://github.com/Luckyt1/WBC_lab.git
 cd WBC_lab
 ```
 
-原提交历史保留，当前默认入口为 IK v3 配方；旧版代码可从历史提交查阅。
+原提交历史保留。GL-165 与 ELF3 使用各自的训练入口、机器人资产和轨迹库；旧版代码可从历史提交查阅。
 
 `.gitignore` 排除模型、日志、完整数据、编译产物和 `.env`；提交前检查文件列表。
 第三方来源和组件许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。外部资产和上游 IK 源码需自行准备。

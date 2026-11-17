@@ -1,0 +1,5 @@
+# Versions verified in the existing GL-165 environment on 2026-11-17.
+# Additional dependencies for tools/record_gl165_policy.py (Isaac Sim required).
+imageio==2.37.0
+imageio-ffmpeg==0.6.0
+pillow==11.2.1

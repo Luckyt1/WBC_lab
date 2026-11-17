@@ -1,0 +1,4 @@
+# Versions verified in the existing GL-165 preview environment on 2026-11-17.
+# Use a separate environment with the project's NumPy, SciPy and PyTorch available.
+mujoco==3.17.0
+trimesh==4.5.1

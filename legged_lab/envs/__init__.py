@@ -16,7 +16,7 @@
 # with additional modifications by the TienKung-Lab Project,
 # and is distributed under the BSD-3-Clause license.
 
-# Only the ELF3 Tang task family is registered in this distribution.
+# Register independent robot families; their external assets are loaded on use.
 from legged_lab.envs.base.base_env import BaseEnv
 from legged_lab.envs.base.base_env_config import BaseAgentCfg, BaseEnvCfg
 from legged_lab.envs.elf3_tang.elf3_env import Elf3Env as Elf3TangEnv
@@ -45,3 +45,8 @@ task_registry.register("walk_elf3_tang_bxi_robust", Elf3TangEnv, Elf3WalkRobustB
 
 from legged_lab.envs.elf3_tang.standing_refine_cfg import Elf3StandingRefineEnvCfg, Elf3StandingRefineAgentCfg
 task_registry.register("walk_elf3_tang_bxi_still", Elf3TangEnv, Elf3StandingRefineEnvCfg(), Elf3StandingRefineAgentCfg())
+
+from legged_lab.envs.gl165.gl165_env import Gl165Env
+from legged_lab.envs.gl165.wbc_cfg import Gl165WbcAgentCfg, Gl165WbcEnvCfg
+
+task_registry.register("walk_gl165_wbc", Gl165Env, Gl165WbcEnvCfg(), Gl165WbcAgentCfg())

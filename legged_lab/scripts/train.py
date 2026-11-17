@@ -255,6 +255,10 @@ def train():
         env_cfg.scene.seed = seed
         agent_cfg.seed = seed
 
+    if env_class_name == 'walk_gl165_wbc' and resume_path is not None:
+        from legged_lab.envs.gl165.checkpoint import restore_checkpoint_config
+
+        restore_checkpoint_config(env_cfg, resume_path)
     env = env_class(env_cfg, args_cli.headless)
 
     print(f"[INFO] Logging experiment in directory: {log_root_path}")
